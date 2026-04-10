@@ -56,6 +56,11 @@ internal sealed partial class PackageActionsPage : ListPage
                 Title = "Grant All Permissions",
                 Subtitle = $"adb shell pm grant {_packageName} <permission>",
             },
+            new ListItem(new RevokeAllPermissionsCommand(_packageName))
+            {
+                Title = "Revoke All Permissions",
+                Subtitle = $"adb shell pm revoke {_packageName} <permission>",
+            },
         ];
     }
 }

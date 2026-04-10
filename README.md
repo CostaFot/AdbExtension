@@ -11,7 +11,6 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 ### App targeting
 
 - [ ] Install APK (file picker)
-- [x] Grant all runtime permissions
 
 ### Debug / inspection
 
@@ -23,7 +22,6 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 
 - [ ] Set screen timeout
 - [ ] Set font size / display size
-- [x] Toggle airplane mode
 - [ ] Change locale
 
 ### Media / files
