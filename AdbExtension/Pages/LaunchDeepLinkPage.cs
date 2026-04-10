@@ -11,6 +11,7 @@ internal sealed partial class LaunchDeepLinkPage : DynamicListPage
 {
     public LaunchDeepLinkPage()
     {
+        Icon = new IconInfo("\uE71B"); // Link
         Title = "Launch Deep Link";
         Name = "Open";
         PlaceholderText = "Enter URL or deep link (e.g. https://example.com or myapp://home)";
