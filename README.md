@@ -4,6 +4,12 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 
 ## Feature Wishlist
 
+### Polish
+
+- [ ] Give proper icons to all commands
+
+
+
 ### App targeting
 
 - [ ] Install APK (file picker)
