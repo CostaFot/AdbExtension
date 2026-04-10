@@ -14,7 +14,6 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 
 ### Debug / inspection
 
-- [ ] Show layout bounds overlay
 - [ ] Pull a specific shared pref file
 - [ ] Dump app's database to desktop
 

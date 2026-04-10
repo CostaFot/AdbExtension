@@ -1,0 +1,47 @@
+// Copyright (c) Microsoft Corporation
+// The Microsoft Corporation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
+using System.ComponentModel;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
+
+namespace AdbExtension;
+
+internal sealed partial class LaunchDeepLinkCommand : InvokableCommand
+{
+    private readonly string _url;
+
+    public LaunchDeepLinkCommand(string url)
+    {
+        _url = url;
+        Name = "Launch Deep Link";
+    }
+
+    public override ICommandResult Invoke()
+    {
+        try
+        {
+            AdbHelper.RunAdb(
+                $"shell am start -a android.intent.action.VIEW -d \"{_url}\"",
+                out _,
+                out string error);
+
+            return string.IsNullOrEmpty(error)
+                ? CommandResult.ShowToast(new ToastArgs { Message = $"Launched: {_url}", Result = CommandResult.KeepOpen() })
+                : ErrorToast($"Failed to launch deep link: {error}");
+        }
+        catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)
+        {
+            return ErrorToast("ADB not found. Make sure adb.exe is in your PATH.");
+        }
+        catch (Exception ex)
+        {
+            return ErrorToast($"Unexpected error: {ex.Message}");
+        }
+    }
+
+    private static ICommandResult ErrorToast(string message) =>
+        CommandResult.ShowToast(new ToastArgs { Message = message, Result = CommandResult.KeepOpen() });
+}

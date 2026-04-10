@@ -22,6 +22,7 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
             new CommandItem(new ToggleTouchCoordsCommand()) { Title = "Toggle Touch Coordinates" },
             new CommandItem(new ToggleAirplaneModeCommand()) { Title = "Toggle Airplane Mode" },
             new CommandItem(new ToggleLayoutBoundsCommand()) { Title = "Toggle Layout Bounds" },
+            new CommandItem(new LaunchDeepLinkPage()) { Title = "Launch Deep Link" },
             new CommandItem(new AdbExtensionPage()) { Title = "ADB App Commands" },
         ];
     }
