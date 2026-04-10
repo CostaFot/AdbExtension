@@ -25,7 +25,7 @@ internal sealed partial class ForceStopCommand : InvokableCommand
         {
             AdbHelper.RunAdb($"shell am force-stop {_packageName}", out _, out string error);
             return string.IsNullOrEmpty(error)
-                ? CommandResult.ShowToast($"Force stopped {_packageName}")
+                ? CommandResult.ShowToast(new ToastArgs { Message = $"Force stopped {_packageName}", Result = CommandResult.KeepOpen() })
                 : ErrorToast($"Failed to force stop: {error}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)

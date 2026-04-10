@@ -94,6 +94,23 @@ internal static class AdbHelper
         }
     }
 
+    // Returns the launcher activity component (e.g. "com.example.app/.MainActivity") or null if not found.
+    public static string? GetLauncherActivity(string packageName)
+    {
+        RunAdb($"shell cmd package resolve-activity --brief -c android.intent.category.LAUNCHER {packageName}", out string output, out string error);
+        if (!string.IsNullOrEmpty(error))
+            return null;
+
+        foreach (var raw in output.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = raw.Trim();
+            if (line.StartsWith(packageName, StringComparison.Ordinal))
+                return line;
+        }
+
+        return null;
+    }
+
     // Returns the set of currently running third-party app package names via "ps -A".
     private static HashSet<string> GetRunningPackages()
     {

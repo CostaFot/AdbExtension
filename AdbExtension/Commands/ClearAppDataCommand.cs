@@ -25,7 +25,7 @@ internal sealed partial class ClearAppDataCommand : InvokableCommand
         {
             AdbHelper.RunAdb($"shell pm clear {_packageName}", out _, out string error);
             return string.IsNullOrEmpty(error)
-                ? CommandResult.ShowToast($"Cleared data for {_packageName}")
+                ? CommandResult.ShowToast(new ToastArgs { Message = $"Cleared data for {_packageName}", Result = CommandResult.KeepOpen() })
                 : ErrorToast($"Failed to clear data: {error}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)

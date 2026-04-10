@@ -21,6 +21,11 @@ internal sealed partial class PackageActionsPage : ListPage
     public override IListItem[] GetItems()
     {
         return [
+            new ListItem(new LaunchCommand(_packageName))
+            {
+                Title = "Launch",
+                Subtitle = "adb shell am start -n <launcher activity>",
+            },
             new ListItem(new KillCommand(_packageName))
             {
                 Title = "Kill Process",

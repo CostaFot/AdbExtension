@@ -37,7 +37,7 @@ internal sealed partial class TakeScreenshotCommand : InvokableCommand
             // Cleanup is best-effort; don't fail the command if it errors
             try { AdbHelper.RunAdb($"shell rm {DeviceTempPath}", out _, out _); } catch { }
 
-            return CommandResult.ShowToast($"Screenshot saved: {localPath}");
+            return CommandResult.ShowToast(new ToastArgs { Message = $"Screenshot saved: {localPath}", Result = CommandResult.KeepOpen() });
         }
         catch (Exception ex) when (ex is Win32Exception w32 && w32.NativeErrorCode == 2)
         {

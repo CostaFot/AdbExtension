@@ -9,24 +9,28 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace AdbExtension;
 
-internal sealed partial class KillCommand : InvokableCommand
+internal sealed partial class LaunchCommand : InvokableCommand
 {
     private readonly string _packageName;
 
-    public KillCommand(string packageName)
+    public LaunchCommand(string packageName)
     {
         _packageName = packageName;
-        Name = "Kill Process";
+        Name = "Launch";
     }
 
     public override ICommandResult Invoke()
     {
         try
         {
-            AdbHelper.RunAdb($"shell am kill {_packageName}", out _, out string error);
+            var activity = AdbHelper.GetLauncherActivity(_packageName);
+            if (activity is null)
+                return ErrorToast($"Could not resolve launcher activity for {_packageName}");
+
+            AdbHelper.RunAdb($"shell am start -n {activity}", out _, out string error);
             return string.IsNullOrEmpty(error)
-                ? CommandResult.ShowToast(new ToastArgs { Message = $"Killed process: {_packageName}", Result = CommandResult.KeepOpen() })
-                : ErrorToast($"Failed to kill process: {error}");
+                ? CommandResult.ShowToast(new ToastArgs { Message = $"Launched {_packageName}", Result = CommandResult.KeepOpen() })
+                : ErrorToast($"Failed to launch: {error}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)
         {
