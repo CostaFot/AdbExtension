@@ -29,17 +29,17 @@ internal sealed partial class PackageActionsPage : ListPage
             new ListItem(new KillCommand(_packageName))
             {
                 Title = "Kill Process",
-                Subtitle = $"adb shell am kill {_packageName}",
+                Subtitle = "adb shell am kill / App must not be in the foreground for this to work",
             },
             new ListItem(new ClearAppDataCommand(_packageName))
             {
                 Title = "Clear App Data",
-                Subtitle = $"adb shell pm clear {_packageName}",
+                Subtitle = "adb shell pm clear",
             },
             new ListItem(new ForceStopCommand(_packageName))
             {
                 Title = "Force Stop",
-                Subtitle = $"adb shell am force-stop {_packageName}",
+                Subtitle = "adb shell am force-stop",
             },
             new ListItem(new OpenDeepLinkPage(_packageName))
             {
@@ -49,17 +49,17 @@ internal sealed partial class PackageActionsPage : ListPage
             new ListItem(new UninstallAppCommand(_packageName))
             {
                 Title = "Uninstall",
-                Subtitle = $"adb shell pm uninstall {_packageName}",
+                Subtitle = "adb shell pm uninstall",
             },
             new ListItem(new GrantAllPermissionsCommand(_packageName))
             {
                 Title = "Grant All Permissions",
-                Subtitle = $"adb shell pm grant {_packageName} <permission>",
+                Subtitle = "adb shell pm grant <permission>",
             },
             new ListItem(new RevokeAllPermissionsCommand(_packageName))
             {
                 Title = "Revoke All Permissions",
-                Subtitle = $"adb shell pm revoke {_packageName} <permission>",
+                Subtitle = "adb shell pm revoke <permission>",
             },
         ];
     }
