@@ -92,7 +92,7 @@ new ListItem(command)
 {
     Title = "Required",
     Subtitle = "Optional secondary text",
-    Icon = new IconInfo("https://...") ,        // or IconHelpers.FromChar('\uE722')
+    Icon = new IconInfo("https://...") ,        // URL icon
     Section = "Section header",                 // groups items under a header
 }
 ```
@@ -103,7 +103,6 @@ new ListItem(command)
 new IconInfo("https://example.com/icon.png")   // URL (light+dark same)
 new IconInfo(lightIconData, darkIconData)       // separate light/dark
 IconHelpers.FromRelativePath("Assets\\foo.png") // bundled asset
-IconHelpers.FromChar('\uE722')                  // Segoe MDL2 glyph
 ```
 
 ### InvokableCommand Pattern
