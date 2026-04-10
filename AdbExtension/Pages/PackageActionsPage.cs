@@ -51,6 +51,11 @@ internal sealed partial class PackageActionsPage : ListPage
                 Title = "Uninstall",
                 Subtitle = $"adb shell pm uninstall {_packageName}",
             },
+            new ListItem(new GrantAllPermissionsCommand(_packageName))
+            {
+                Title = "Grant All Permissions",
+                Subtitle = $"adb shell pm grant {_packageName} <permission>",
+            },
         ];
     }
 }

@@ -11,7 +11,7 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 ### App targeting
 
 - [ ] Install APK (file picker)
-- [ ] Grant / revoke a permission
+- [x] Grant all runtime permissions
 
 ### Debug / inspection
 
