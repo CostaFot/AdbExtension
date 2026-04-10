@@ -1,0 +1,54 @@
+# Build output
+bin/
+obj/
+
+# NuGet packages (restored on build)
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Publish profiles (contain machine-specific paths)
+**/Properties/PublishProfiles/
+
+# MSIX / AppX packaging output
+AppPackages/
+BundleArtifacts/
+*.msix
+*.msixbundle
+*.appx
+*.appxbundle
+*.appxupload
+
+# Generated CsWinRT interop files
+Generated Files/
+_Generated/
+
+# Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+# ReSharper
+_ReSharper*/
+*.ReSharper
+
+# NCrunch
+*.ncrunch*
+.*crunch*.local.xml
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logs and crash dumps
+*.log
+*.dmp

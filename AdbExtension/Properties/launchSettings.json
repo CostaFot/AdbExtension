@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "AdbExtension (Package)": {
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": true
+    },
+    "AdbExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
