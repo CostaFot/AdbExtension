@@ -8,8 +8,6 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 
 - [ ] Give proper icons to all commands
 
-
-
 ### App targeting
 
 - [ ] Install APK (file picker)
@@ -19,25 +17,16 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 
 ### Debug / inspection
 
-- [x] Show touch coordinates overlay
 - [ ] Show layout bounds overlay
-- [ ] Enable / disable animations (scale to 0)
 - [ ] Pull a specific shared pref file
 - [ ] Dump app's database to desktop
 
 ### Device state
 
 - [ ] Set screen timeout
-- [ ] Lock / unlock screen
 - [ ] Set font size / display size
 - [ ] Toggle airplane mode
 - [ ] Change locale
-
-### Network
-
-- [ ] Proxy on/off (for Charles/mitmproxy)
-- [ ] Reverse TCP port (for local servers)
-- [ ] List open ports on device
 
 ### Media / files
 
