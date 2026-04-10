@@ -46,48 +46,56 @@ internal sealed partial class PackageActionsPage : DynamicListPage
         {
             Title = "Launch",
             Subtitle = "adb shell am start -n <launcher activity>",
+            Icon = new IconInfo("\uE768"), // Play
             MoreCommands = [StarItem(ActionIds.Launch)],
         }),
         (ActionIds.KillProcess, new ListItem(new KillCommand(_packageName))
         {
             Title = "Kill Process",
             Subtitle = "adb shell am kill / App must not be in the foreground for this to work",
+            Icon = new IconInfo("\uE8BB"), // Stop
             MoreCommands = [StarItem(ActionIds.KillProcess)],
         }),
         (ActionIds.ClearAppData, new ListItem(new ClearAppDataCommand(_packageName))
         {
             Title = "Clear App Data",
             Subtitle = "adb shell pm clear",
+            Icon = new IconInfo("\uE894"), // Clear
             MoreCommands = [StarItem(ActionIds.ClearAppData)],
         }),
         (ActionIds.ForceStop, new ListItem(new ForceStopCommand(_packageName))
         {
             Title = "Force Stop",
             Subtitle = "adb shell am force-stop",
+            Icon = new IconInfo("\uE71A"), // PowerButton
             MoreCommands = [StarItem(ActionIds.ForceStop)],
         }),
         (ActionIds.OpenDeepLink, new ListItem(new OpenDeepLinkPage(_packageName))
         {
             Title = "Open Deep Link",
             Subtitle = "Enter a deep link URL to launch",
+            Icon = new IconInfo("\uE71B"), // Link
             MoreCommands = [StarItem(ActionIds.OpenDeepLink)],
         }),
         (ActionIds.Uninstall, new ListItem(new UninstallAppCommand(_packageName))
         {
             Title = "Uninstall",
             Subtitle = "adb shell pm uninstall",
+            Icon = new IconInfo("\uE74D"), // Delete
             MoreCommands = [StarItem(ActionIds.Uninstall)],
         }),
         (ActionIds.GrantPermissions, new ListItem(new GrantAllPermissionsCommand(_packageName))
         {
             Title = "Grant All Permissions",
             Subtitle = "adb shell pm grant <permission>",
+            Icon = new IconInfo("\uE899"), // Accept
             MoreCommands = [StarItem(ActionIds.GrantPermissions)],
         }),
         (ActionIds.RevokePermissions, new ListItem(new RevokeAllPermissionsCommand(_packageName))
         {
             Title = "Revoke All Permissions",
             Subtitle = "adb shell pm revoke <permission>",
+            Icon = new IconInfo("\uE8D0"), // Blocked
             MoreCommands = [StarItem(ActionIds.RevokePermissions)],
         }),
     ];

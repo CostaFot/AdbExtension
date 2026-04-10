@@ -14,7 +14,7 @@ internal sealed partial class ToggleLayoutBoundsCommand : InvokableCommand
     public ToggleLayoutBoundsCommand()
     {
         Name = "Toggle Layout Bounds";
-        Icon = new IconInfo("https://github.com/favicon.ico");
+        Icon = new IconInfo("\uE773"); // GridView/Layout
     }
 
     public override ICommandResult Invoke()

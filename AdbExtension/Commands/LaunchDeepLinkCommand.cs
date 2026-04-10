@@ -17,6 +17,7 @@ internal sealed partial class LaunchDeepLinkCommand : InvokableCommand
     {
         _url = url;
         Name = "Launch Deep Link";
+        Icon = new IconInfo("\uE71B"); // Link
     }
 
     public override ICommandResult Invoke()

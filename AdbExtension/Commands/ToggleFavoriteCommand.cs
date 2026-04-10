@@ -18,7 +18,7 @@ internal sealed partial class ToggleFavoriteCommand : InvokableCommand
         _id = id;
         _refresh = refresh;
         Name = FavoritesStore.Instance.IsFavorite(id) ? "Remove from Favorites" : "Add to Favorites";
-        Icon = new IconInfo("https://github.com/favicon.ico");
+        Icon = new IconInfo(FavoritesStore.Instance.IsFavorite(id) ? "\uE735" : "\uE734"); // FavoriteStarFill / FavoriteStar
     }
 
     public override ICommandResult Invoke()

@@ -17,7 +17,7 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
 
     public AdbExtensionPage()
     {
-        Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
+        Icon = new IconInfo("\uE8EA"); // Phone
         Title = "ADB App Commands";
         Name = "Open";
         PlaceholderText = "Search packages...";

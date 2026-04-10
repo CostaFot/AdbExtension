@@ -18,7 +18,7 @@ internal sealed partial class TakeScreenshotCommand : InvokableCommand
     public TakeScreenshotCommand()
     {
         Name = "Take Screenshot";
-        Icon = new IconInfo("https://github.com/favicon.ico");
+        Icon = new IconInfo("\uE722"); // Camera
     }
 
     public override ICommandResult Invoke()

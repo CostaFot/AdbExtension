@@ -14,7 +14,7 @@ internal sealed partial class ToggleTouchCoordsCommand : InvokableCommand
     public ToggleTouchCoordsCommand()
     {
         Name = "Toggle Touch Coordinates";
-        Icon = new IconInfo("https://github.com/favicon.ico");
+        Icon = new IconInfo("\uED5F"); // TouchPointer
     }
 
     public override ICommandResult Invoke()

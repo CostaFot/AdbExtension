@@ -14,7 +14,7 @@ internal sealed partial class LockScreenCommand : InvokableCommand
     public LockScreenCommand()
     {
         Name = "Lock Screen";
-        Icon = new IconInfo("https://github.com/favicon.ico");
+        Icon = new IconInfo("\uE72E"); // Lock
     }
 
     public override ICommandResult Invoke()

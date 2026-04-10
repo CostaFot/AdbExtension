@@ -14,7 +14,7 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
     public AdbExtensionCommandsProvider()
     {
         DisplayName = "ADB Quick Commands";
-        Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
+        Icon = new IconInfo("\uE8EA"); // Phone
         _commands = [
             new CommandItem(new TakeScreenshotCommand()) { Title = "Take Screenshot" },
             new CommandItem(new LockScreenCommand()) { Title = "Lock Screen" },

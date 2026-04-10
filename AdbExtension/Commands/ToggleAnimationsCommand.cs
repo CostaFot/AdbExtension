@@ -15,7 +15,7 @@ internal sealed partial class ToggleAnimationsCommand : InvokableCommand
     public ToggleAnimationsCommand()
     {
         Name = "Toggle Animations";
-        Icon = new IconInfo("https://github.com/favicon.ico");
+        Icon = new IconInfo("\uE8EB"); // Transition
     }
 
     public override ICommandResult Invoke()
