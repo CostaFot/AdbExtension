@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace AdbExtension;
 
-internal record PackageInfo(string Name, bool IsDebuggable);
+internal record PackageInfo(string Name, bool IsDebuggable, bool IsRunning, bool IsForeground);
 
 internal static class AdbHelper
 {
@@ -64,9 +64,14 @@ internal static class AdbHelper
             RunAdb("shell dumpsys package packages", out string dumpsysOutput, out _);
             var debuggable = ParseDebuggablePackages(dumpsysOutput);
 
+            var running = GetRunningPackages();
+            var foreground = GetForegroundPackage();
+
             return thirdParty
-                .Select(pkg => new PackageInfo(pkg, debuggable.Contains(pkg)))
-                .OrderByDescending(p => p.IsDebuggable)
+                .Select(pkg => new PackageInfo(pkg, debuggable.Contains(pkg), running.Contains(pkg), pkg == foreground))
+                .OrderByDescending(p => p.IsForeground)
+                .ThenByDescending(p => p.IsRunning)
+                .ThenByDescending(p => p.IsDebuggable)
                 .ThenBy(p => p.Name)
                 .ToArray();
         }
@@ -74,6 +79,52 @@ internal static class AdbHelper
         {
             return [];
         }
+    }
+
+    // Returns the set of currently running third-party app package names via "ps -A".
+    private static HashSet<string> GetRunningPackages()
+    {
+        RunAdb("shell ps -A", out string output, out string error);
+        if (!string.IsNullOrEmpty(error))
+            return [];
+
+        var result = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var raw in output.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = raw.Trim();
+            // App processes run as u0_a* users
+            if (!line.StartsWith("u0_a", StringComparison.Ordinal))
+                continue;
+            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 9)
+                result.Add(parts[^1]);
+        }
+
+        return result;
+    }
+
+    // Returns the package name of the currently foregrounded app via "dumpsys window windows".
+    private static string? GetForegroundPackage()
+    {
+        RunAdb("shell dumpsys window windows", out string output, out string error);
+        if (!string.IsNullOrEmpty(error))
+            return null;
+
+        foreach (var raw in output.Split('\n'))
+        {
+            var line = raw.Trim();
+            if (!line.StartsWith("mCurrentFocus=", StringComparison.Ordinal))
+                continue;
+
+            // mCurrentFocus=Window{abc u0 com.example.app/com.example.app.MainActivity}
+            var start = line.LastIndexOf(' ') + 1;
+            var slash = line.IndexOf('/', start);
+            var end = slash >= 0 ? slash : line.IndexOf('}', start);
+            if (start > 0 && end > start)
+                return line[start..end];
+        }
+
+        return null;
     }
 
     // Parses "dumpsys package packages" output and returns the set of debuggable package names.

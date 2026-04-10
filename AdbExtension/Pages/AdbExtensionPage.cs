@@ -52,11 +52,24 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
         }
         else
         {
-            items.AddRange(source.Select(pkg => (IListItem)new ListItem(new PackageActionsPage(pkg.Name))
+            items.AddRange(source.Select(pkg =>
             {
-                Title = pkg.Name,
-                Subtitle = pkg.IsDebuggable ? "debuggable" : null,
-                Section = pkg.IsDebuggable ? "Debuggable" : "Other",
+                var tags = new List<string>();
+                if (pkg.IsForeground) tags.Add("foreground");
+                else if (pkg.IsRunning) tags.Add("running");
+                if (pkg.IsDebuggable) tags.Add("debuggable");
+
+                var section = pkg.IsForeground ? "Foreground"
+                    : pkg.IsRunning ? "Running"
+                    : pkg.IsDebuggable ? "Debuggable"
+                    : "Other";
+
+                return (IListItem)new ListItem(new PackageActionsPage(pkg.Name))
+                {
+                    Title = pkg.Name,
+                    Subtitle = tags.Count > 0 ? string.Join(" · ", tags) : null,
+                    Section = section,
+                };
             }));
         }
 
