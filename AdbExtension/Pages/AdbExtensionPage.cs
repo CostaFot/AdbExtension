@@ -27,7 +27,9 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
 
     private void LoadPackages()
     {
+        Log.Info("LoadPackages: start");
         _packages = AdbHelper.GetInstalledPackages();
+        Log.Info($"LoadPackages: done, {_packages.Length} packages");
         IsLoading = false;
         RaiseItemsChanged(0);
     }
@@ -80,6 +82,7 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
 
     internal void RefreshPackages()
     {
+        Log.Info("RefreshPackages: triggered");
         _packages = null;
         IsLoading = true;
         RaiseItemsChanged(0);

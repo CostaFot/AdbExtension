@@ -47,9 +47,14 @@ internal static class AdbHelper
     {
         try
         {
+            Log.Info("GetInstalledPackages: starting");
+
             RunAdb("shell pm list packages -3", out string pmOutput, out string pmError);
             if (!string.IsNullOrEmpty(pmError))
+            {
+                Log.Error($"GetInstalledPackages: pm list packages failed — {pmError}");
                 return [];
+            }
 
             var thirdParty = pmOutput
                 .Split('\n', StringSplitOptions.RemoveEmptyEntries)
@@ -59,13 +64,20 @@ internal static class AdbHelper
                 .ToHashSet(StringComparer.Ordinal);
 
             if (thirdParty.Count == 0)
+            {
+                Log.Info("GetInstalledPackages: no third-party packages found");
                 return [];
+            }
+
+            Log.Info($"GetInstalledPackages: found {thirdParty.Count} packages, fetching details...");
 
             RunAdb("shell dumpsys package packages", out string dumpsysOutput, out _);
             var debuggable = ParseDebuggablePackages(dumpsysOutput);
 
             var running = GetRunningPackages();
             var foreground = GetForegroundPackage();
+
+            Log.Info($"GetInstalledPackages: {debuggable.Count} debuggable, {running.Count} running, foreground={foreground ?? "none"}");
 
             return thirdParty
                 .Select(pkg => new PackageInfo(pkg, debuggable.Contains(pkg), running.Contains(pkg), pkg == foreground))
@@ -75,8 +87,9 @@ internal static class AdbHelper
                 .ThenBy(p => p.Name)
                 .ToArray();
         }
-        catch
+        catch (Exception ex)
         {
+            Log.Error("GetInstalledPackages: unexpected error", ex);
             return [];
         }
     }
