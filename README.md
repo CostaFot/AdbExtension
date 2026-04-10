@@ -12,8 +12,6 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 
 - [ ] Install APK (file picker)
 - [ ] Grant / revoke a permission
-- [ ] Enable / disable an app
-- [ ] Set as default app for an intent
 
 ### Debug / inspection
 
