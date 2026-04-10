@@ -31,7 +31,7 @@ internal sealed partial class ToggleTouchCoordsCommand : InvokableCommand
                 return ErrorToast($"Failed to set touch coords: {writeError}");
 
             var state = newValue == "1" ? "enabled" : "disabled";
-            return CommandResult.ShowToast(new ToastArgs { Message = $"Touch coordinates {state}", Result = CommandResult.KeepOpen() });
+            return AdbSettingsManager.Instance.SuccessToast($"Touch coordinates {state}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)
         {

@@ -31,7 +31,7 @@ internal sealed partial class GrantAllPermissionsCommand : InvokableCommand
 
             var permissions = ParseRuntimePermissions(output);
             if (permissions.Count == 0)
-                return CommandResult.ShowToast(new ToastArgs { Message = "No runtime permissions found", Result = CommandResult.KeepOpen() });
+                return AdbSettingsManager.Instance.SuccessToast("No runtime permissions found");
 
             var granted = 0;
             foreach (var permission in permissions)
@@ -41,11 +41,7 @@ internal sealed partial class GrantAllPermissionsCommand : InvokableCommand
                     granted++;
             }
 
-            return CommandResult.ShowToast(new ToastArgs
-            {
-                Message = $"Granted {granted}/{permissions.Count} permissions",
-                Result = CommandResult.KeepOpen(),
-            });
+            return AdbSettingsManager.Instance.SuccessToast($"Granted {granted}/{permissions.Count} permissions");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)
         {

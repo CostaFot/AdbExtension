@@ -48,7 +48,7 @@ internal sealed partial class ToggleAirplaneModeCommand : InvokableCommand
 
             if (!string.IsNullOrEmpty(writeError))
                 return ErrorToast($"Failed to set airplane mode: {writeError}");
-            return CommandResult.ShowToast(new ToastArgs { Message = $"Airplane mode {state}", Result = CommandResult.KeepOpen() });
+            return AdbSettingsManager.Instance.SuccessToast($"Airplane mode {state}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)
         {

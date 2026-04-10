@@ -31,7 +31,7 @@ internal sealed partial class OpenDeepLinkCommand : InvokableCommand
                 out string error);
 
             return string.IsNullOrEmpty(error)
-                ? CommandResult.ShowToast(new ToastArgs { Message = $"Opened: {_url}", Result = CommandResult.KeepOpen() })
+                ? AdbSettingsManager.Instance.SuccessToast($"Opened: {_url}")
                 : ErrorToast($"Failed to open deep link: {error}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)

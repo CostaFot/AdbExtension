@@ -30,7 +30,7 @@ internal sealed partial class LaunchDeepLinkCommand : InvokableCommand
                 out string error);
 
             return string.IsNullOrEmpty(error)
-                ? CommandResult.ShowToast(new ToastArgs { Message = $"Launched: {_url}", Result = CommandResult.KeepOpen() })
+                ? AdbSettingsManager.Instance.SuccessToast($"Launched: {_url}")
                 : ErrorToast($"Failed to launch deep link: {error}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)

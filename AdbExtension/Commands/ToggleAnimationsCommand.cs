@@ -38,7 +38,7 @@ internal sealed partial class ToggleAnimationsCommand : InvokableCommand
                 return ErrorToast($"Failed to set animations: {error}");
 
             var state = isEnabled ? "disabled" : "enabled";
-            return CommandResult.ShowToast(new ToastArgs { Message = $"Animations {state}", Result = CommandResult.KeepOpen() });
+            return AdbSettingsManager.Instance.SuccessToast($"Animations {state}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)
         {

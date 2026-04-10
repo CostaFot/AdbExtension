@@ -29,7 +29,7 @@ internal sealed partial class LaunchCommand : InvokableCommand
 
             AdbHelper.RunAdb($"shell am start -n {activity}", out _, out string error);
             return string.IsNullOrEmpty(error)
-                ? CommandResult.ShowToast(new ToastArgs { Message = $"Launched {_packageName}", Result = CommandResult.KeepOpen() })
+                ? AdbSettingsManager.Instance.SuccessToast($"Launched {_packageName}")
                 : ErrorToast($"Failed to launch: {error}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)

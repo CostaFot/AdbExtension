@@ -36,7 +36,7 @@ internal sealed partial class ToggleLayoutBoundsCommand : InvokableCommand
                 return ErrorToast($"Failed to notify system: {notifyError}");
 
             var state = enable ? "enabled" : "disabled";
-            return CommandResult.ShowToast(new ToastArgs { Message = $"Layout bounds {state}", Result = CommandResult.KeepOpen() });
+            return AdbSettingsManager.Instance.SuccessToast($"Layout bounds {state}");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)
         {

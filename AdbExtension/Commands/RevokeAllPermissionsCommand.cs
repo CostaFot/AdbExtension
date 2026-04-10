@@ -30,7 +30,7 @@ internal sealed partial class RevokeAllPermissionsCommand : InvokableCommand
 
             var permissions = ParseGrantedRuntimePermissions(output);
             if (permissions.Count == 0)
-                return CommandResult.ShowToast(new ToastArgs { Message = "No granted runtime permissions found", Result = CommandResult.KeepOpen() });
+                return AdbSettingsManager.Instance.SuccessToast("No granted runtime permissions found");
 
             var revoked = 0;
             foreach (var permission in permissions)
@@ -40,11 +40,7 @@ internal sealed partial class RevokeAllPermissionsCommand : InvokableCommand
                     revoked++;
             }
 
-            return CommandResult.ShowToast(new ToastArgs
-            {
-                Message = $"Revoked {revoked}/{permissions.Count} permissions",
-                Result = CommandResult.KeepOpen(),
-            });
+            return AdbSettingsManager.Instance.SuccessToast($"Revoked {revoked}/{permissions.Count} permissions");
         }
         catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)
         {

@@ -46,7 +46,7 @@ internal sealed partial class UninstallAppCommand : InvokableCommand
             {
                 AdbHelper.RunAdb($"shell pm uninstall {_packageName}", out _, out string error);
                 return string.IsNullOrEmpty(error)
-                    ? CommandResult.ShowToast(new ToastArgs { Message = $"Uninstalled {_packageName}", Result = CommandResult.KeepOpen() })
+                    ? AdbSettingsManager.Instance.SuccessToast($"Uninstalled {_packageName}")
                     : ErrorToast($"Failed to uninstall: {error}");
             }
             catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)

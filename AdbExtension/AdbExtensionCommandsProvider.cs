@@ -15,6 +15,7 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
     {
         DisplayName = "ADB Quick Commands";
         Icon = new IconInfo("\uE8EA"); // Phone
+        Settings = AdbSettingsManager.Instance.Settings;
         _commands = [
             new CommandItem(new TakeScreenshotCommand()) { Title = "Take Screenshot" },
             new CommandItem(new ToggleAnimationsCommand()) { Title = "Toggle Animations" },
