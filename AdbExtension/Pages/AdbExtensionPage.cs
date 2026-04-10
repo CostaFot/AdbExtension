@@ -19,7 +19,12 @@ internal sealed partial class AdbExtensionPage : ListPage
     public override IListItem[] GetItems()
     {
         return [
-            new ListItem(new NoOpCommand()) { Title = "TODO: Implement your extension here" }
+            new ListItem(new TakeScreenshotCommand())
+            {
+                Title = "Take Screenshot",
+                Subtitle = "Capture a screenshot from the connected Android device",
+                Icon = new IconInfo("https://github.com/favicon.ico"),
+            },
         ];
     }
 }
