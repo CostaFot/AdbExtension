@@ -17,7 +17,9 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
         _commands = [
             new CommandItem(new TakeScreenshotCommand()) { Title = "Take Screenshot" },
+            new CommandItem(new LockScreenCommand()) { Title = "Lock Screen" },
             new CommandItem(new ToggleAnimationsCommand()) { Title = "Toggle Animations" },
+            new CommandItem(new ToggleTouchCoordsCommand()) { Title = "Toggle Touch Coordinates" },
             new CommandItem(new AdbExtensionPage()) { Title = "ADB App Commands" },
         ];
     }

@@ -46,6 +46,11 @@ internal sealed partial class PackageActionsPage : ListPage
                 Title = "Open Deep Link",
                 Subtitle = "Enter a deep link URL to launch",
             },
+            new ListItem(new UninstallAppCommand(_packageName))
+            {
+                Title = "Uninstall",
+                Subtitle = $"adb shell pm uninstall {_packageName}",
+            },
         ];
     }
 }

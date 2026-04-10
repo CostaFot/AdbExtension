@@ -13,15 +13,13 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 ### App targeting
 
 - [ ] Install APK (file picker)
-- [ ] Uninstall app
 - [ ] Grant / revoke a permission
 - [ ] Enable / disable an app
 - [ ] Set as default app for an intent
 
 ### Debug / inspection
 
-- [ ] Dump current activity (`adb shell dumpsys activity top`)
-- [ ] Show touch coordinates overlay
+- [x] Show touch coordinates overlay
 - [ ] Show layout bounds overlay
 - [ ] Enable / disable animations (scale to 0)
 - [ ] Pull a specific shared pref file
