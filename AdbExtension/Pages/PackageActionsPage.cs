@@ -88,7 +88,7 @@ internal sealed partial class PackageActionsPage : DynamicListPage
         {
             Title = "Grant All Permissions",
             Subtitle = "adb shell pm grant <permission>",
-            Icon = new IconInfo("\uE899"), // Accept
+            Icon = new IconInfo("\uF78C"),
             MoreCommands = [StarItem(ActionIds.GrantPermissions)],
         }),
         (ActionIds.RevokePermissions, new ListItem(new RevokeAllPermissionsCommand(_packageName))

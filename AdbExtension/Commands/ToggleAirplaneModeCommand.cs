@@ -14,7 +14,7 @@ internal sealed partial class ToggleAirplaneModeCommand : InvokableCommand
     public ToggleAirplaneModeCommand()
     {
         Name = "Toggle Airplane Mode";
-        Icon = new IconInfo("\uEB4A"); // Airplane
+        Icon = new IconInfo("\uE709"); // Airplane
     }
 
     public override ICommandResult Invoke()
