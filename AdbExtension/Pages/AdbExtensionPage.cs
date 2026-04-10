@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -20,6 +21,15 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
         Title = "ADB App Commands";
         Name = "Open";
         PlaceholderText = "Search packages...";
+        IsLoading = true;
+        Task.Run(LoadPackages);
+    }
+
+    private void LoadPackages()
+    {
+        _packages = AdbHelper.GetInstalledPackages();
+        IsLoading = false;
+        RaiseItemsChanged(0);
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
@@ -27,17 +37,10 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
 
     public override IListItem[] GetItems()
     {
-        _packages ??= AdbHelper.GetInstalledPackages();
+        if (_packages is null)
+            return [];
 
         var items = new List<IListItem>();
-
-        if (string.IsNullOrEmpty(SearchText))
-        {
-            items.Add(new ListItem(new RefreshPackagesCommand(this))
-            {
-                Title = "Refresh 🔄️",
-            });
-        }
 
         var source = string.IsNullOrEmpty(SearchText)
             ? _packages
@@ -46,15 +49,18 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
         if (source.Length == 0)
         {
             items.Add(new ListItem(new NoOpCommand()) { Title = "No packages found 😔" });
-            return items.ToArray();
+        }
+        else
+        {
+            items.AddRange(source.Select(pkg => (IListItem)new ListItem(new PackageActionsPage(pkg.Name))
+            {
+                Title = pkg.Name,
+                Subtitle = pkg.IsDebuggable ? "debuggable" : null,
+                Section = pkg.IsDebuggable ? "Debuggable" : "Other",
+            }));
         }
 
-        items.AddRange(source.Select(pkg => (IListItem)new ListItem(new PackageActionsPage(pkg.Name))
-        {
-            Title = pkg.Name,
-            Subtitle = pkg.IsDebuggable ? "debuggable" : null,
-            Section = pkg.IsDebuggable ? "Debuggable" : "Other",
-        }));
+        items.Add(new ListItem(new RefreshPackagesCommand(this)) { Title = "Refresh 🔄️" });
 
         return items.ToArray();
     }
@@ -62,7 +68,9 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
     internal void RefreshPackages()
     {
         _packages = null;
+        IsLoading = true;
         RaiseItemsChanged(0);
+        Task.Run(LoadPackages);
     }
 
     private sealed class RefreshPackagesCommand : InvokableCommand
