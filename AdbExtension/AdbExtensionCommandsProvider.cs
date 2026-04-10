@@ -20,6 +20,7 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
             new CommandItem(new LockScreenCommand()) { Title = "Lock Screen" },
             new CommandItem(new ToggleAnimationsCommand()) { Title = "Toggle Animations" },
             new CommandItem(new ToggleTouchCoordsCommand()) { Title = "Toggle Touch Coordinates" },
+            new CommandItem(new ToggleAirplaneModeCommand()) { Title = "Toggle Airplane Mode" },
             new CommandItem(new AdbExtensionPage()) { Title = "ADB App Commands" },
         ];
     }

@@ -25,7 +25,7 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 
 - [ ] Set screen timeout
 - [ ] Set font size / display size
-- [ ] Toggle airplane mode
+- [x] Toggle airplane mode
 - [ ] Change locale
 
 ### Media / files
