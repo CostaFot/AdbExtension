@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using Microsoft.CommandPalette.Extensions;
@@ -25,21 +25,21 @@ internal sealed partial class TakeScreenshotCommand : InvokableCommand
     {
         try
         {
-            RunAdb($"shell screencap -p {DeviceTempPath}", out string captureError);
+            AdbHelper.RunAdb($"shell screencap -p {DeviceTempPath}", out _, out string captureError);
             if (!string.IsNullOrEmpty(captureError))
                 return ErrorToast($"Failed to capture screenshot: {captureError}");
 
             string localPath = BuildLocalPath();
-            RunAdb($"pull {DeviceTempPath} \"{localPath}\"", out string pullError);
+            AdbHelper.RunAdb($"pull {DeviceTempPath} \"{localPath}\"", out _, out string pullError);
             if (!string.IsNullOrEmpty(pullError))
                 return ErrorToast($"Failed to pull screenshot: {pullError}");
 
             // Cleanup is best-effort; don't fail the command if it errors
-            try { RunAdb($"shell rm {DeviceTempPath}", out _); } catch { }
+            try { AdbHelper.RunAdb($"shell rm {DeviceTempPath}", out _, out _); } catch { }
 
             return CommandResult.ShowToast($"Screenshot saved: {localPath}");
         }
-        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception w32 && w32.NativeErrorCode == 2)
+        catch (Exception ex) when (ex is Win32Exception w32 && w32.NativeErrorCode == 2)
         {
             return ErrorToast("ADB not found. Make sure Android Platform Tools are installed and adb.exe is in your PATH.");
         }
@@ -47,33 +47,6 @@ internal sealed partial class TakeScreenshotCommand : InvokableCommand
         {
             return ErrorToast($"Unexpected error: {ex.Message}");
         }
-    }
-
-    // Runs adb, reading both stdout and stderr before WaitForExit to prevent deadlocks.
-    private static void RunAdb(string arguments, out string stderrOutput)
-    {
-        using var process = new Process();
-        process.StartInfo = new ProcessStartInfo
-        {
-            FileName = "adb",
-            Arguments = arguments,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            CreateNoWindow = true,
-        };
-
-        process.Start();
-        string stdout = process.StandardOutput.ReadToEnd();
-        string stderr = process.StandardError.ReadToEnd();
-        process.WaitForExit();
-
-        bool hasError = process.ExitCode != 0
-            || stderr.Contains("error:", StringComparison.OrdinalIgnoreCase);
-
-        stderrOutput = hasError
-            ? (string.IsNullOrWhiteSpace(stderr) ? $"adb exited with code {process.ExitCode}" : stderr.Trim())
-            : string.Empty;
     }
 
     private static string BuildLocalPath()

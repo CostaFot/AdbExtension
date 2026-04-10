@@ -13,10 +13,11 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
 
     public AdbExtensionCommandsProvider()
     {
-        DisplayName = "ADB Extension";
+        DisplayName = "ADB Quick Commands";
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
         _commands = [
-            new CommandItem(new AdbExtensionPage()) { Title = DisplayName },
+            new CommandItem(new TakeScreenshotCommand()) { Title = "Take Screenshot" },
+            new CommandItem(new AdbExtensionPage()) { Title = "ADB App Commands" },
         ];
     }
 
