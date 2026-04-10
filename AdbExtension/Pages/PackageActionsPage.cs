@@ -21,6 +21,11 @@ internal sealed partial class PackageActionsPage : ListPage
     public override IListItem[] GetItems()
     {
         return [
+            new ListItem(new KillCommand(_packageName))
+            {
+                Title = "Kill Process",
+                Subtitle = $"adb shell am kill {_packageName}",
+            },
             new ListItem(new ClearAppDataCommand(_packageName))
             {
                 Title = "Clear App Data",
