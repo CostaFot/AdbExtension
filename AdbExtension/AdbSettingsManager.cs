@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.IO;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
@@ -18,7 +19,15 @@ internal sealed class AdbSettingsManager : JsonSettingsManager
         Description = "When off, the palette dismisses after each command.",
     };
 
+    private readonly TextSetting _screenshotFolder = new("screenshotFolder", string.Empty)
+    {
+        Label = "Screenshot save folder",
+        Description = "Where screenshots are saved. Leave empty to use My Pictures.",
+        Placeholder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
+    };
+
     public bool KeepOpen => _keepOpen.Value;
+    public string ScreenshotFolder => _screenshotFolder.Value ?? string.Empty;
 
     public ICommandResult SuccessToast(string message) =>
         KeepOpen
@@ -29,6 +38,7 @@ internal sealed class AdbSettingsManager : JsonSettingsManager
     {
         FilePath = System.IO.Path.Combine(Utilities.BaseSettingsPath("Microsoft.CmdPal"), "adb.settings.json");
         Settings.Add(_keepOpen);
+        Settings.Add(_screenshotFolder);
         LoadSettings();
         Settings.SettingsChanged += (s, a) => SaveSettings();
     }

@@ -51,9 +51,11 @@ internal sealed partial class TakeScreenshotCommand : InvokableCommand
 
     private static string BuildLocalPath()
     {
-        string pictures = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+        var folder = AdbSettingsManager.Instance.ScreenshotFolder;
+        if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
+            folder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
         string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
-        return Path.Combine(pictures, $"screenshot_{timestamp}.png");
+        return Path.Combine(folder, $"screenshot_{timestamp}.png");
     }
 
     private static ICommandResult ErrorToast(string message)
