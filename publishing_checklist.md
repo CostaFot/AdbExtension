@@ -31,7 +31,7 @@ The extension was scaffolded from Microsoft's template, which leaves several pla
 ### Step 2 — After Partner Center registration
 
 1. Register in **Microsoft Partner Center** → Apps and games → New Product → MSIX or PWA app.
-2. Reserve product name (e.g. `ADB Quick Commands`).
+2. Reserve product name (e.g. `ADB Extension for Command Palette`).
 3. From **Product Management → Product identity**, copy:
    - `Package/Identity/Name`
    - `Package/Identity/Publisher`
