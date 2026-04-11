@@ -12,6 +12,7 @@ internal static class ActionIds
     public const string KillProcess      = "kill";
     public const string ClearAppData          = "clear";
     public const string ClearDataAndRestart   = "clear-restart";
+    public const string RestartApp            = "restart";
     public const string ForceStop        = "force-stop";
     public const string OpenDeepLink     = "deep-link";
     public const string Uninstall        = "uninstall";

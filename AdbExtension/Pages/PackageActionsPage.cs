@@ -57,6 +57,13 @@ internal sealed partial class PackageActionsPage : ListPage, INotifyItemsChanged
             Icon = new IconInfo("\uE768"), // Play
             MoreCommands = [StarItem(ActionIds.Launch)],
         }),
+        (ActionIds.RestartApp, new ListItem(new RestartAppCommand(_packageName))
+        {
+            Title = "Restart App",
+            Subtitle = "adb shell am force-stop + am start",
+            Icon = new IconInfo("\uE72C"), // Refresh
+            MoreCommands = [StarItem(ActionIds.RestartApp)],
+        }),
         (ActionIds.KillProcess, new ListItem(new KillCommand(_packageName))
         {
             Title = "Kill Process",
