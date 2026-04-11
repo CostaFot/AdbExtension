@@ -3,13 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Foundation;
 
 namespace AdbExtension;
 
-internal sealed partial class PackageActionsPage : DynamicListPage
+internal sealed partial class PackageActionsPage : ListPage, INotifyItemsChanged
 {
     private readonly string _packageName;
     private readonly Action _refreshPackageList;
+    private event TypedEventHandler<object, IItemsChangedEventArgs>? _itemsChanged;
+
+    event TypedEventHandler<object, IItemsChangedEventArgs> INotifyItemsChanged.ItemsChanged
+    {
+        add { _itemsChanged += value; _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(-1)); }
+        remove => _itemsChanged -= value;
+    }
+
+    protected new void RaiseItemsChanged(int totalItems = -1)
+        => _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
 
     public PackageActionsPage(string packageName, Action refreshPackageList)
     {
@@ -18,8 +29,6 @@ internal sealed partial class PackageActionsPage : DynamicListPage
         Title = packageName;
         Name = "Open";
     }
-
-    public override void UpdateSearchText(string oldSearch, string newSearch) { }
 
     public override IListItem[] GetItems()
     {
@@ -48,6 +57,13 @@ internal sealed partial class PackageActionsPage : DynamicListPage
             Icon = new IconInfo("\uE768"), // Play
             MoreCommands = [StarItem(ActionIds.Launch)],
         }),
+        (ActionIds.RestartApp, new ListItem(new RestartAppCommand(_packageName))
+        {
+            Title = "Restart",
+            Subtitle = "adb shell am force-stop + am start",
+            Icon = new IconInfo("\uE72C"), // Refresh
+            MoreCommands = [StarItem(ActionIds.RestartApp)],
+        }),
         (ActionIds.KillProcess, new ListItem(new KillCommand(_packageName))
         {
             Title = "Kill Process",
@@ -62,6 +78,13 @@ internal sealed partial class PackageActionsPage : DynamicListPage
             Icon = new IconInfo("\uE894"), // Clear
             MoreCommands = [StarItem(ActionIds.ClearAppData)],
         }),
+        (ActionIds.ClearDataAndRestart, new ListItem(new ClearDataAndRestartCommand(_packageName))
+        {
+            Title = "Clear Data & Restart",
+            Subtitle = "adb shell pm clear + am start",
+            Icon = new IconInfo("\uE72C"), // Refresh
+            MoreCommands = [StarItem(ActionIds.ClearDataAndRestart)],
+        }),
         (ActionIds.ForceStop, new ListItem(new ForceStopCommand(_packageName))
         {
             Title = "Force Stop",
@@ -72,7 +95,7 @@ internal sealed partial class PackageActionsPage : DynamicListPage
         (ActionIds.OpenDeepLink, new ListItem(new OpenDeepLinkPage(_packageName))
         {
             Title = "Open Deep Link",
-            Subtitle = "Enter a deep link URL to launch",
+            Subtitle = "Enter a deep link that targets this package",
             Icon = new IconInfo("\uE71B"), // Link
             MoreCommands = [StarItem(ActionIds.OpenDeepLink)],
         }),
