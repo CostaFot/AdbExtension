@@ -50,6 +50,48 @@ new ListItem(new MyInvokableCommand()) { Title = "Do thing" }
 | `DynamicListPage` | List that reacts to search input — override `UpdateSearchText()` |
 | `CommandProvider` | Extension entry point — returns top-level `ICommandItem[]` |
 
+### Page Activation Hook (On-Load Refresh)
+
+The framework calls `FetchItems` → `GetItems()` **before** subscribing to `ItemsChanged`. This means any `RaiseItemsChanged` fired from the constructor is lost and the page shows empty on first open.
+
+The fix: re-implement `INotifyItemsChanged` on the page class and intercept the `add` accessor. The framework subscribes via `INotifyItemsChanged.ItemsChanged +=`, so our accessor fires right after subscription — triggering a second `FetchItems` while the framework is already listening.
+
+**Critical:** use `INotifyItemsChanged.ItemsChanged`, not `IListPage.ItemsChanged` — `ItemsChanged` lives on `INotifyItemsChanged`, and the class must re-list the interface to override base class dispatch.
+
+```csharp
+// For pages that load data async (e.g. AdbExtensionPage):
+internal sealed partial class MyPage : DynamicListPage, INotifyItemsChanged
+{
+    private event TypedEventHandler<object, IItemsChangedEventArgs>? _itemsChanged;
+
+    event TypedEventHandler<object, IItemsChangedEventArgs> INotifyItemsChanged.ItemsChanged
+    {
+        add { _itemsChanged += value; RefreshData(); } // called every time user navigates to this page
+        remove => _itemsChanged -= value;
+    }
+
+    protected new void RaiseItemsChanged(int totalItems = -1)
+        => _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
+}
+
+// For pages with synchronous GetItems() (e.g. PackageActionsPage):
+internal sealed partial class MyPage : ListPage, INotifyItemsChanged
+{
+    private event TypedEventHandler<object, IItemsChangedEventArgs>? _itemsChanged;
+
+    event TypedEventHandler<object, IItemsChangedEventArgs> INotifyItemsChanged.ItemsChanged
+    {
+        add { _itemsChanged += value; _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(-1)); } // fire immediately after subscribe
+        remove => _itemsChanged -= value;
+    }
+
+    protected new void RaiseItemsChanged(int totalItems = -1)
+        => _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
+}
+```
+
+Do **not** call `IsLoading = true` + `Task.Run(Load)` from the constructor — the event fires before the framework subscribes and the signal is lost.
+
 ### DynamicListPage Pattern
 
 ```csharp
