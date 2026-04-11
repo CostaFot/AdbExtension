@@ -66,7 +66,7 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
                     : pkg.IsDebuggable ? "Debuggable"
                     : "Other";
 
-                return (IListItem)new ListItem(new PackageActionsPage(pkg.Name))
+                return (IListItem)new ListItem(new PackageActionsPage(pkg.Name, RefreshPackages))
                 {
                     Title = pkg.Name,
                     Subtitle = tags.Count > 0 ? string.Join(" · ", tags) : null,

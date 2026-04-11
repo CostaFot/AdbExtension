@@ -26,8 +26,15 @@ internal sealed class AdbSettingsManager : JsonSettingsManager
         Placeholder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
     };
 
+    private readonly ToggleSetting _skipUninstallConfirmation = new("skipUninstallConfirmation", false)
+    {
+        Label = "Skip uninstall confirmation",
+        Description = "When on, uninstall runs immediately without a confirmation dialog.",
+    };
+
     public bool KeepOpen => _keepOpen.Value;
     public string ScreenshotFolder => _screenshotFolder.Value ?? string.Empty;
+    public bool SkipUninstallConfirmation => _skipUninstallConfirmation.Value;
 
     public ICommandResult SuccessToast(string message) =>
         KeepOpen
@@ -39,6 +46,7 @@ internal sealed class AdbSettingsManager : JsonSettingsManager
         FilePath = System.IO.Path.Combine(Utilities.BaseSettingsPath("Microsoft.CmdPal"), "adb.settings.json");
         Settings.Add(_keepOpen);
         Settings.Add(_screenshotFolder);
+        Settings.Add(_skipUninstallConfirmation);
         LoadSettings();
         Settings.SettingsChanged += (s, a) => SaveSettings();
     }

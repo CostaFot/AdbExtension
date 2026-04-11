@@ -12,31 +12,38 @@ namespace AdbExtension;
 internal sealed partial class UninstallAppCommand : InvokableCommand
 {
     private readonly string _packageName;
+    private readonly Action _refreshPackageList;
 
-    public UninstallAppCommand(string packageName)
+    public UninstallAppCommand(string packageName, Action refreshPackageList)
     {
         _packageName = packageName;
+        _refreshPackageList = refreshPackageList;
         Name = "Uninstall";
     }
 
     public override ICommandResult Invoke()
     {
+        if (AdbSettingsManager.Instance.SkipUninstallConfirmation)
+            return new DoUninstallCommand(_packageName, _refreshPackageList).Invoke();
+
         return CommandResult.Confirm(new ConfirmationArgs
         {
             Title = $"Uninstall {_packageName}?",
             Description = "This will remove the app and all its data from the device.",
             IsPrimaryCommandCritical = true,
-            PrimaryCommand = new DoUninstallCommand(_packageName),
+            PrimaryCommand = new DoUninstallCommand(_packageName, _refreshPackageList),
         });
     }
 
     private sealed partial class DoUninstallCommand : InvokableCommand
     {
         private readonly string _packageName;
+        private readonly Action _refreshPackageList;
 
-        public DoUninstallCommand(string packageName)
+        public DoUninstallCommand(string packageName, Action refreshPackageList)
         {
             _packageName = packageName;
+            _refreshPackageList = refreshPackageList;
             Name = "Uninstall";
         }
 
@@ -45,9 +52,12 @@ internal sealed partial class UninstallAppCommand : InvokableCommand
             try
             {
                 AdbHelper.RunAdb($"shell pm uninstall {_packageName}", out _, out string error);
-                return string.IsNullOrEmpty(error)
-                    ? AdbSettingsManager.Instance.SuccessToast($"Uninstalled {_packageName}")
-                    : ErrorToast($"Failed to uninstall: {error}");
+                if (string.IsNullOrEmpty(error))
+                {
+                    _refreshPackageList();
+                    return CommandResult.GoBack();
+                }
+                return ErrorToast($"Failed to uninstall: {error}");
             }
             catch (Exception ex) when (ex is Win32Exception w && w.NativeErrorCode == 2)
             {

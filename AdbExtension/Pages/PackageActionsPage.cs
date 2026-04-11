@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CommandPalette.Extensions;
@@ -12,10 +13,12 @@ namespace AdbExtension;
 internal sealed partial class PackageActionsPage : DynamicListPage
 {
     private readonly string _packageName;
+    private readonly Action _refreshPackageList;
 
-    public PackageActionsPage(string packageName)
+    public PackageActionsPage(string packageName, Action refreshPackageList)
     {
         _packageName = packageName;
+        _refreshPackageList = refreshPackageList;
         Title = packageName;
         Name = "Open";
     }
@@ -77,7 +80,7 @@ internal sealed partial class PackageActionsPage : DynamicListPage
             Icon = new IconInfo("\uE71B"), // Link
             MoreCommands = [StarItem(ActionIds.OpenDeepLink)],
         }),
-        (ActionIds.Uninstall, new ListItem(new UninstallAppCommand(_packageName))
+        (ActionIds.Uninstall, new ListItem(new UninstallAppCommand(_packageName, _refreshPackageList))
         {
             Title = "Uninstall",
             Subtitle = "adb shell pm uninstall",
