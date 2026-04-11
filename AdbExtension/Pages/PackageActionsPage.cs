@@ -59,7 +59,7 @@ internal sealed partial class PackageActionsPage : ListPage, INotifyItemsChanged
         }),
         (ActionIds.RestartApp, new ListItem(new RestartAppCommand(_packageName))
         {
-            Title = "Restart App",
+            Title = "Restart",
             Subtitle = "adb shell am force-stop + am start",
             Icon = new IconInfo("\uE72C"), // Refresh
             MoreCommands = [StarItem(ActionIds.RestartApp)],
@@ -95,7 +95,7 @@ internal sealed partial class PackageActionsPage : ListPage, INotifyItemsChanged
         (ActionIds.OpenDeepLink, new ListItem(new OpenDeepLinkPage(_packageName))
         {
             Title = "Open Deep Link",
-            Subtitle = "Enter a deep link URL to launch",
+            Subtitle = "Enter a deep link that targets this package",
             Icon = new IconInfo("\uE71B"), // Link
             MoreCommands = [StarItem(ActionIds.OpenDeepLink)],
         }),

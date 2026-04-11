@@ -14,18 +14,18 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
         Settings = AdbSettingsManager.Instance.Settings;
 
         _commands = [
-            new CommandItem(new TakeScreenshotCommand()) { Title = "Take Screenshot" },
-            new CommandItem(new ToggleAnimationsCommand()) { Title = "Toggle Animations" },
-            new CommandItem(new ToggleTouchCoordsCommand()) { Title = "Toggle Touch Coordinates" },
-            new CommandItem(new ToggleAirplaneModeCommand()) { Title = "Toggle Airplane Mode" },
-            new CommandItem(new EnableWifiCommand()) { Title = "Enable Wi-Fi" },
-            new CommandItem(new DisableWifiCommand()) { Title = "Disable Wi-Fi" },
-            new CommandItem(new EnableMobileDataCommand()) { Title = "Enable Mobile Data" },
-            new CommandItem(new DisableMobileDataCommand()) { Title = "Disable Mobile Data" },
-            new CommandItem(new ToggleLayoutBoundsCommand()) { Title = "Toggle Layout Bounds" },
-            new CommandItem(new InstallApksPage()) { Title = "APK Manager" },
-            new CommandItem(new LaunchDeepLinkPage()) { Title = "Launch Deep Link" },
             new CommandItem(new AdbExtensionPage()) { Title = "ADB App Commands" },
+            new CommandItem(new TakeScreenshotCommand()) { Title = "ADB Take Screenshot" },
+            new CommandItem(new ToggleAnimationsCommand()) { Title = "ADB Toggle Animations" },
+            new CommandItem(new ToggleTouchCoordsCommand()) { Title = "ADB Toggle Touch Coordinates" },
+            new CommandItem(new ToggleAirplaneModeCommand()) { Title = "ADB Toggle Airplane Mode" },
+            new CommandItem(new EnableWifiCommand()) { Title = "ADB Enable Wi-Fi" },
+            new CommandItem(new DisableWifiCommand()) { Title = "ADB Disable Wi-Fi" },
+            new CommandItem(new EnableMobileDataCommand()) { Title = "ADB Enable Mobile Data" },
+            new CommandItem(new DisableMobileDataCommand()) { Title = "ADB Disable Mobile Data" },
+            new CommandItem(new ToggleLayoutBoundsCommand()) { Title = "ADB Toggle Layout Bounds" },
+            new CommandItem(new InstallApksPage()) { Title = "ADB APK Manager" },
+            new CommandItem(new LaunchDeepLinkPage()) { Title = "ADB Launch Deep Link" },
         ];
     }
 

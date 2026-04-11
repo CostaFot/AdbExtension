@@ -12,7 +12,7 @@ internal sealed partial class RestartAppCommand : InvokableCommand
     public RestartAppCommand(string packageName)
     {
         _packageName = packageName;
-        Name = "Restart App";
+        Name = "Restart";
     }
 
     public override ICommandResult Invoke()
