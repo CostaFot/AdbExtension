@@ -9,7 +9,7 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
 
     public AdbExtensionCommandsProvider()
     {
-        DisplayName = "ADB Quick Commands";
+        DisplayName = "ADB Extension for Command Palette";
         Icon = new IconInfo("\uE8EA"); // Phone
         Settings = AdbSettingsManager.Instance.Settings;
 

@@ -1,4 +1,4 @@
-# ADB Quick Commands — Claude Guide
+# ADB Extension for Command Palette — Claude Guide
 
 ## Documentation
 

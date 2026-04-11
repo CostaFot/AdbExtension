@@ -1,4 +1,4 @@
-# Publishing Prep Plan — ADB Quick Commands
+# Publishing Prep Plan — ADB Extension for Command Palette
 
 ## Context
 

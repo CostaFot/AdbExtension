@@ -1,4 +1,4 @@
-# ADB Quick Commands
+# ADB Extension for Command Palette
 
 A Windows 11 Command Palette extension (PowerToys) for Android developers. Exposes common ADB operations directly from the command palette.
 
