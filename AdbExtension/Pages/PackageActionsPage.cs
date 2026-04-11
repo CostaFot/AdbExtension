@@ -71,6 +71,13 @@ internal sealed partial class PackageActionsPage : ListPage, INotifyItemsChanged
             Icon = new IconInfo("\uE894"), // Clear
             MoreCommands = [StarItem(ActionIds.ClearAppData)],
         }),
+        (ActionIds.ClearDataAndRestart, new ListItem(new ClearDataAndRestartCommand(_packageName))
+        {
+            Title = "Clear Data & Restart",
+            Subtitle = "adb shell pm clear + am start",
+            Icon = new IconInfo("\uE72C"), // Refresh
+            MoreCommands = [StarItem(ActionIds.ClearDataAndRestart)],
+        }),
         (ActionIds.ForceStop, new ListItem(new ForceStopCommand(_packageName))
         {
             Title = "Force Stop",
