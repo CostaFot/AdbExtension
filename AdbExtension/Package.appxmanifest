@@ -11,12 +11,12 @@
   <Identity
     Name="AdbExtension"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    Version="0.0.1.0" />
+    Version="1.0.0.0" />
   <!-- When you're ready to publish your extension, you'll need to change the
        Publisher= to match your own identity -->
 
   <Properties>
-    <DisplayName>ADB Extension</DisplayName>
+    <DisplayName>ADB Extension for Command Palette</DisplayName>
     <PublisherDisplayName>A Lone Developer</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -35,8 +35,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="ADB Extension"
-        Description="ADB Extension"
+        DisplayName="ADB Extension for Command Palette"
+        Description="Run ADB commands for connected Android devices directly from Command Palette."
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
@@ -46,8 +46,8 @@
       <Extensions>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="AdbExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="ADB Extension">
-              <com:Class Id="d857a76b-60ad-4db5-a14c-22f1d4f7bfaa" DisplayName="ADB Extension" />
+            <com:ExeServer Executable="AdbExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="ADB Extension for Command Palette">
+              <com:Class Id="d857a76b-60ad-4db5-a14c-22f1d4f7bfaa" DisplayName="ADB Extension for Command Palette" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
@@ -55,8 +55,8 @@
           <uap3:AppExtension Name="com.microsoft.commandpalette"
             Id="ID"
             PublicFolder="Public"
-            DisplayName="ADB Extension"
-            Description="ADB Extension">
+            DisplayName="ADB Extension for Command Palette"
+            Description="Run ADB commands for connected Android devices directly from Command Palette.">
             <uap3:Properties>
               <CmdPalProvider>
                 <Activation>
