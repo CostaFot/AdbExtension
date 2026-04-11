@@ -22,6 +22,16 @@ internal sealed class AdbSettingsManager : JsonSettingsManager
         Placeholder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
     };
 
+    private static readonly string DefaultApkFolder =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+
+    private readonly TextSetting _apkFolder = new("apkFolder", DefaultApkFolder)
+    {
+        Label = "APK Manager folder",
+        Description = "Default folder the APK Manager scans for APK files.",
+        Placeholder = DefaultApkFolder,
+    };
+
     private readonly ToggleSetting _skipUninstallConfirmation = new("skipUninstallConfirmation", false)
     {
         Label = "Skip uninstall confirmation",
@@ -30,6 +40,7 @@ internal sealed class AdbSettingsManager : JsonSettingsManager
 
     public bool KeepOpen => _keepOpen.Value;
     public string ScreenshotFolder => _screenshotFolder.Value ?? string.Empty;
+    public string ApkFolder => _apkFolder.Value ?? string.Empty;
     public bool SkipUninstallConfirmation => _skipUninstallConfirmation.Value;
 
     public ICommandResult SuccessToast(string message) =>
@@ -42,6 +53,7 @@ internal sealed class AdbSettingsManager : JsonSettingsManager
         FilePath = System.IO.Path.Combine(Utilities.BaseSettingsPath("Microsoft.CmdPal"), "adb.settings.json");
         Settings.Add(_keepOpen);
         Settings.Add(_screenshotFolder);
+        Settings.Add(_apkFolder);
         Settings.Add(_skipUninstallConfirmation);
         LoadSettings();
         Settings.SettingsChanged += (s, a) => SaveSettings();
