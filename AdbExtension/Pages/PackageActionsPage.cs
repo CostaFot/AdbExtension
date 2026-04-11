@@ -3,13 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Foundation;
 
 namespace AdbExtension;
 
-internal sealed partial class PackageActionsPage : DynamicListPage
+internal sealed partial class PackageActionsPage : ListPage, INotifyItemsChanged
 {
     private readonly string _packageName;
     private readonly Action _refreshPackageList;
+    private event TypedEventHandler<object, IItemsChangedEventArgs>? _itemsChanged;
+
+    event TypedEventHandler<object, IItemsChangedEventArgs> INotifyItemsChanged.ItemsChanged
+    {
+        add { _itemsChanged += value; _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(-1)); }
+        remove => _itemsChanged -= value;
+    }
+
+    protected new void RaiseItemsChanged(int totalItems = -1)
+        => _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
 
     public PackageActionsPage(string packageName, Action refreshPackageList)
     {
@@ -18,8 +29,6 @@ internal sealed partial class PackageActionsPage : DynamicListPage
         Title = packageName;
         Name = "Open";
     }
-
-    public override void UpdateSearchText(string oldSearch, string newSearch) { }
 
     public override IListItem[] GetItems()
     {

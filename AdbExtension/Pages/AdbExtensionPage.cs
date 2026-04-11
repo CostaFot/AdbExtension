@@ -4,12 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Foundation;
 
 namespace AdbExtension;
 
-internal sealed partial class AdbExtensionPage : DynamicListPage
+internal sealed partial class AdbExtensionPage : DynamicListPage, INotifyItemsChanged
 {
     private PackageInfo[]? _packages;
+    private event TypedEventHandler<object, IItemsChangedEventArgs>? _itemsChanged;
+
+    event TypedEventHandler<object, IItemsChangedEventArgs> INotifyItemsChanged.ItemsChanged
+    {
+        add { _itemsChanged += value; RefreshPackages(); }
+        remove => _itemsChanged -= value;
+    }
+
+    protected new void RaiseItemsChanged(int totalItems = -1)
+        => _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
 
     public AdbExtensionPage()
     {
@@ -17,8 +28,6 @@ internal sealed partial class AdbExtensionPage : DynamicListPage
         Title = "ADB App Commands";
         Name = "Open";
         PlaceholderText = "Search packages...";
-        IsLoading = true;
-        Task.Run(LoadPackages);
     }
 
     private void LoadPackages()

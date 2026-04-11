@@ -3,18 +3,30 @@ using System.IO;
 using System.Linq;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Foundation;
 
 namespace AdbExtension;
 
-internal sealed partial class InstallApksPage : DynamicListPage
+internal sealed partial class InstallApksPage : DynamicListPage, INotifyItemsChanged
 {
+    private event TypedEventHandler<object, IItemsChangedEventArgs>? _itemsChanged;
+
+    event TypedEventHandler<object, IItemsChangedEventArgs> INotifyItemsChanged.ItemsChanged
+    {
+        add { _itemsChanged += value; _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(-1)); }
+        remove => _itemsChanged -= value;
+    }
+
+    protected new void RaiseItemsChanged(int totalItems = -1)
+        => _itemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
+
     public InstallApksPage()
     {
         Icon = new IconInfo("\uE896"); // Download
         Title = "APK Manager";
         Name = "Open";
-        PlaceholderText = "Override folder path...";
-        RaiseItemsChanged(0);
+        PlaceholderText = "Enter folder path...";
+        SetSearchNoUpdate(AdbSettingsManager.Instance.ApkFolder);
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
@@ -22,9 +34,7 @@ internal sealed partial class InstallApksPage : DynamicListPage
 
     public override IListItem[] GetItems()
     {
-        var folderPath = string.IsNullOrWhiteSpace(SearchText)
-            ? AdbSettingsManager.Instance.ApkFolder
-            : SearchText.Trim();
+        var folderPath = SearchText.Trim();
 
         if (string.IsNullOrEmpty(folderPath))
             return [];
