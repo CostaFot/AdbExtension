@@ -13,10 +13,17 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
 
     public AdbExtensionCommandsProvider()
     {
-        DisplayName = "ADB Extension";
-        Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
+        DisplayName = "ADB Quick Commands";
+        Icon = new IconInfo("\uE8EA"); // Phone
+        Settings = AdbSettingsManager.Instance.Settings;
         _commands = [
-            new CommandItem(new AdbExtensionPage()) { Title = DisplayName },
+            new CommandItem(new TakeScreenshotCommand()) { Title = "Take Screenshot" },
+            new CommandItem(new ToggleAnimationsCommand()) { Title = "Toggle Animations" },
+            new CommandItem(new ToggleTouchCoordsCommand()) { Title = "Toggle Touch Coordinates" },
+            new CommandItem(new ToggleAirplaneModeCommand()) { Title = "Toggle Airplane Mode" },
+            new CommandItem(new ToggleLayoutBoundsCommand()) { Title = "Toggle Layout Bounds" },
+            new CommandItem(new LaunchDeepLinkPage()) { Title = "Launch Deep Link" },
+            new CommandItem(new AdbExtensionPage()) { Title = "ADB App Commands" },
         ];
     }
 
