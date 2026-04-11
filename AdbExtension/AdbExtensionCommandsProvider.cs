@@ -1,7 +1,3 @@
-// Copyright (c) Microsoft Corporation
-// The Microsoft Corporation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -22,6 +18,7 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
             new CommandItem(new ToggleTouchCoordsCommand()) { Title = "Toggle Touch Coordinates" },
             new CommandItem(new ToggleAirplaneModeCommand()) { Title = "Toggle Airplane Mode" },
             new CommandItem(new ToggleLayoutBoundsCommand()) { Title = "Toggle Layout Bounds" },
+            new CommandItem(new InstallApksPage()) { Title = "APK Manager" },
             new CommandItem(new LaunchDeepLinkPage()) { Title = "Launch Deep Link" },
             new CommandItem(new AdbExtensionPage()) { Title = "ADB App Commands" },
         ];
