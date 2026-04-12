@@ -24,7 +24,7 @@ internal sealed partial class AdbExtensionPage : DynamicListPage, INotifyItemsCh
 
     public AdbExtensionPage()
     {
-        Icon = new IconInfo("\uE8EA"); // Phone
+        Icon = IconHelpers.FromRelativePaths("Assets\\droid_dark_1.png", "Assets\\droid_light_2.png");
         Title = "ADB App Commands";
         Name = "Open";
         PlaceholderText = "Search packages...";
@@ -110,4 +110,5 @@ internal sealed partial class AdbExtensionPage : DynamicListPage, INotifyItemsCh
             return CommandResult.KeepOpen();
         }
     }
+
 }
