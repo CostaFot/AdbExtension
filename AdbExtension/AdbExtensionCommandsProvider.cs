@@ -10,7 +10,7 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
     public AdbExtensionCommandsProvider()
     {
         DisplayName = "ADB Extension for Command Palette";
-        Icon = new IconInfo("\uE8EA"); // Phone
+        Icon = IconHelpers.FromRelativePaths("Assets\\droid_dark_1.png", "Assets\\droid_light_2.png");
         Settings = AdbSettingsManager.Instance.Settings;
 
         _commands = [
@@ -33,4 +33,5 @@ public partial class AdbExtensionCommandsProvider : CommandProvider
     {
         return _commands;
     }
+
 }
