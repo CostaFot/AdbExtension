@@ -10,7 +10,7 @@ internal sealed partial class DisableWifiCommand : InvokableCommand
     public DisableWifiCommand()
     {
         Name = "Disable Wi-Fi";
-        Icon = new IconInfo("\uE701"); // Wifi
+        Icon = new IconInfo("\uEB5E"); // Wifi
     }
 
     public override ICommandResult Invoke()
