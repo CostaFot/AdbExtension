@@ -2,6 +2,7 @@
 
 A Windows 11 Command Palette extension (PowerToys) for Android developers. Exposes common ADB operations directly from the command palette — no terminal needed.
 
+
 ## Requirements
 
 - [PowerToys](https://github.com/microsoft/PowerToys) with Command Palette enabled
@@ -44,14 +45,11 @@ Available directly from the Command Palette search bar:
 - **ADB Launch Deep Link** — fire an arbitrary deep link without targeting a specific package
 
 ## Installation
+ADB Extension is available via command palette
 
-Download the latest `.msixbundle` from [Releases](../../releases) and double-click to install, or install via WinGet:
+![Command Palette search](docs/search_extension_1.png)
+![Command Palette results](docs/search_extension_2.png)
 
-```
-winget install CostaPapazoglou.AdbExtension
-```
-
-After installation, reload Command Palette (or restart PowerToys) to pick up the extension.
 
 ## Wishlist
 
