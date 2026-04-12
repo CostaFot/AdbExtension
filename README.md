@@ -89,8 +89,8 @@ Fire an arbitrary deep link without targeting a specific package.
 
 ADB Extension is available via command palette
 
-![Command Palette search](docs/search_extension_1.png)
-![Command Palette results](docs/search_extension_2.png)
+![Command Palette search](search_extension_1.png)
+![Command Palette results](search_extension_2.png)
 
 ## Wishlist
 
