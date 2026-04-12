@@ -10,7 +10,7 @@ internal sealed partial class DisableMobileDataCommand : InvokableCommand
     public DisableMobileDataCommand()
     {
         Name = "Disable Mobile Data";
-        Icon = new IconInfo("\uEC3B"); // NetworkTower
+        Icon = new IconInfo("\uE791"); // DataSense
     }
 
     public override ICommandResult Invoke()
