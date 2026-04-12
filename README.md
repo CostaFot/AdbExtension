@@ -1,7 +1,6 @@
 # ADB Extension for Command Palette
 
-A Windows 11 Command Palette extension (PowerToys) for Android developers. Exposes common ADB operations directly from the command palette — no terminal needed.
-
+A Windows 11 Command Palette extension (PowerToys) for Android developers. Exposes common ADB operations directly from the command palette.
 
 ## Requirements
 
@@ -14,6 +13,8 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 ### ADB App Commands
 
 Browse all installed packages on the connected device, filtered by status (foreground, running, debuggable). Select a package to act on it:
+
+![ADB App Commands](docs/app_commands.gif)
 
 | Action | ADB equivalent |
 |---|---|
@@ -30,26 +31,66 @@ Browse all installed packages on the connected device, filtered by status (foreg
 
 Actions can be starred as favorites and will appear at the top of the list for that package.
 
-### Device Commands
+### ADB Take Screenshot
 
-Available directly from the Command Palette search bar:
+Captures the screen and saves it to Pictures (or a custom folder configured in settings).
 
-- **ADB Take Screenshot** — captures the screen and saves it to Pictures (or a custom folder configured in settings)
-- **ADB Toggle Animations** — enables/disables window, transition, and animator duration scales
-- **ADB Toggle Touch Coordinates** — shows/hides touch coordinate overlay
-- **ADB Toggle Layout Bounds** — shows/hides layout bounds overlay
-- **ADB Toggle Airplane Mode** — toggles airplane mode
-- **ADB Enable / Disable Wi-Fi** — turns Wi-Fi on or off
-- **ADB Enable / Disable Mobile Data** — turns mobile data on or off
-- **ADB APK Manager** — install one or more APKs from a file picker
-- **ADB Launch Deep Link** — fire an arbitrary deep link without targeting a specific package
+![Take Screenshot](docs/take_screenshot.gif)
+
+### ADB Toggle Animations
+
+Enables/disables window, transition, and animator duration scales.
+
+![Toggle Animations](docs/toggle_animations.gif)
+
+### ADB Toggle Touch Coordinates
+
+Shows/hides touch coordinate overlay.
+
+![Toggle Touch Coordinates](docs/toggle_touch_coords.gif)
+
+### ADB Toggle Layout Bounds
+
+Shows/hides layout bounds overlay.
+
+![Toggle Layout Bounds](docs/toggle_layout_bounds.gif)
+
+### ADB Toggle Airplane Mode
+
+Toggles airplane mode on/off.
+
+![Toggle Airplane Mode](docs/toggle_airplane_mode.gif)
+
+### ADB Enable / Disable Wi-Fi
+
+Turns Wi-Fi on or off.
+
+![Toggle Wi-Fi](docs/toggle_wifi.gif)
+
+### ADB Enable / Disable Mobile Data
+
+Turns mobile data on or off.
+
+![Toggle Mobile Data](docs/toggle_mobile_data.gif)
+
+### ADB APK Manager
+
+Install one or more APKs from a file picker.
+
+![APK Manager](docs/apk_manager.gif)
+
+### ADB Launch Deep Link
+
+Fire an arbitrary deep link without targeting a specific package.
+
+![Launch Deep Link](docs/launch_deep_link.gif)
 
 ## Installation
+
 ADB Extension is available via command palette
 
 ![Command Palette search](docs/search_extension_1.png)
 ![Command Palette results](docs/search_extension_2.png)
-
 
 ## Wishlist
 
