@@ -10,7 +10,7 @@ on:
       release_notes:
         description: 'What is new in this version'
         required: false
-        default: 'New release with latest updates and improvements.'
+        default: 'Updates happened.'
         type: string
 
 env:
