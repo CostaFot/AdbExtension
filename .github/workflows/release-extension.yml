@@ -56,7 +56,7 @@ jobs:
 
     - name: Build EXE installers (x64 and ARM64)
       run: |
-        Set-Location "${{ env.FOLDER_NAME }}/${{ env.FOLDER_NAME }}"
+        Set-Location "${{ env.FOLDER_NAME }}"
         .\build-exe.ps1 -Version "${{ steps.version.outputs.VERSION }}" -Platforms @("x64", "arm64")
       shell: pwsh
 
@@ -64,14 +64,14 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.EXTENSION_NAME }}-x64-installer
-        path: ${{ env.FOLDER_NAME }}/${{ env.FOLDER_NAME }}/bin/Release/installer/*-x64.exe
+        path: ${{ env.FOLDER_NAME }}/bin/Release/installer/*-x64.exe
         if-no-files-found: error
 
     - name: Upload ARM64 installer artifact
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.EXTENSION_NAME }}-arm64-installer
-        path: ${{ env.FOLDER_NAME }}/${{ env.FOLDER_NAME }}/bin/Release/installer/*-arm64.exe
+        path: ${{ env.FOLDER_NAME }}/bin/Release/installer/*-arm64.exe
         if-no-files-found: warn
 
     - name: Create GitHub Release
@@ -97,7 +97,7 @@ jobs:
           3. The extension will be registered and available in Command Palette
 
           Repository: ${{ env.GITHUB_REPO_URL }}
-        files: ${{ env.FOLDER_NAME }}/${{ env.FOLDER_NAME }}/bin/Release/installer/*.exe
+        files: ${{ env.FOLDER_NAME }}/bin/Release/installer/*.exe
         draft: false
         prerelease: false
       env:
