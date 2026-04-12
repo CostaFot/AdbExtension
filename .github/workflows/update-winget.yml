@@ -1,0 +1,75 @@
+name: Update WinGet Manifest
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0.0)'
+        required: false
+        type: string
+      release_tag:
+        description: 'Release tag (e.g., v1.0.0.0)'
+        required: false
+        type: string
+
+env:
+  EXTENSION_NAME: AdbExtension
+  GITHUB_USER_NAME: CostaFot
+  GITHUB_REPO: AdbExtension
+  # Update this after your first winget PR is merged (e.g. CostaFot.AdbExtension)
+  WINGET_PACKAGE_ID: CostaFot.AdbExtension
+
+jobs:
+  update-winget:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get release info
+        id: release
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch" -and "${{ inputs.version }}" -ne "") {
+            echo "VERSION=${{ inputs.version }}" >> $env:GITHUB_OUTPUT
+            echo "TAG=${{ inputs.release_tag }}" >> $env:GITHUB_OUTPUT
+          } elseif ("${{ github.event_name }}" -eq "release") {
+            $version = "${{ github.event.release.tag_name }}" -replace "^v", ""
+            echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+            echo "TAG=${{ github.event.release.tag_name }}" >> $env:GITHUB_OUTPUT
+          } else {
+            $latestRelease = gh release list --limit 1 --json tagName | ConvertFrom-Json
+            $tag = $latestRelease.tagName
+            $version = $tag -replace "^v", ""
+            echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+            echo "TAG=$tag" >> $env:GITHUB_OUTPUT
+          }
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+
+      - name: Install wingetcreate
+        run: iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+        shell: pwsh
+
+      - name: Update WinGet manifest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $version = "${{ steps.release.outputs.VERSION }}"
+          $tag = "${{ steps.release.outputs.TAG }}"
+
+          $x64Url = "https://github.com/${{ env.GITHUB_USER_NAME }}/${{ env.GITHUB_REPO }}/releases/download/$tag/${{ env.EXTENSION_NAME }}-Setup-$version-x64.exe"
+          $arm64Url = "https://github.com/${{ env.GITHUB_USER_NAME }}/${{ env.GITHUB_REPO }}/releases/download/$tag/${{ env.EXTENSION_NAME }}-Setup-$version-arm64.exe"
+
+          Write-Host "Updating WinGet manifest for version $version"
+          Write-Host "x64 URL: $x64Url"
+          Write-Host "ARM64 URL: $arm64Url"
+
+          .\wingetcreate.exe update ${{ env.WINGET_PACKAGE_ID }} `
+            --version $version `
+            --urls "$x64Url|x64" "$arm64Url|arm64" `
+            --token $env:GITHUB_TOKEN `
+            --submit
+        shell: pwsh
