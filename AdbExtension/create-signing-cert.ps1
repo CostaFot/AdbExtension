@@ -50,4 +50,4 @@ $base64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($OutFile))
 $base64 | Set-Clipboard
 Write-Host "  SIGNING_CERT_PFX = (copied to clipboard)"
 Write-Host ""
-Write-Host "Keep $OutFile safe — you need it to re-sign future releases with the same identity."
+Write-Host "Keep $OutFile safe - you need it to re-sign future releases with the same identity."
