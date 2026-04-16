@@ -75,10 +75,24 @@ Fire an arbitrary deep link without targeting a specific package.
 
 ## Installation
 
-ADB Extension is available via command palette
+### Microsoft Store (recommended)
 
-![Command Palette search](search_extension_1.png)
-![Command Palette results](search_extension_2.png)
+Install from the Microsoft Store - it works out of the box.
+
+[Install from Microsoft Store](#) ← link coming soon
+
+### Manual MSIX (sideload)
+
+Download the `.msixbundle` from the [latest GitHub Release](https://github.com/CostaFot/AdbExtension/releases/latest). Before installing, you'll need to trust the self-signed certificate:
+
+1. Right-click the `.msixbundle` → Properties → Digital Signatures → select the cert → Details → View Certificate → Install Certificate
+2. Store location: **Local Machine** → **Trusted People**
+3. Double-click the `.msixbundle` to install
+
+
+### WinGet
+
+Initially tried publishing on WinGet, but unfortunately found out Command Palette extensions require MSIX packaging with a valid (expensive!) code signing certificate so they can be discoverable. So yeah, ignore WinGet for now.
 
 ## Wishlist
 
@@ -100,6 +114,9 @@ ADB Extension is available via command palette
 - [ ] Simulate low battery / charging state
 - [ ] Trigger doze mode
 - [ ] Fake a GPS location
+
+### P0 bugs
+- [ ] Sydney Sweeney
 
 ## License
 
