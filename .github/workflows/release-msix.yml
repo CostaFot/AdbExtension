@@ -101,7 +101,7 @@ jobs:
       run: |
         $arch = switch ($env:PROCESSOR_ARCHITECTURE) { "AMD64" { "x64" } "ARM64" { "arm64" } default { "x64" } }
         $found = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\$arch\makeappx.exe" -ErrorAction SilentlyContinue `
-          | Sort-Object Name -Descending | Select-Object -First 1
+          | Sort-Object FullName -Descending | Select-Object -First 1
         if (-not $found) { throw "makeappx.exe not found" }
         echo "PATH=$($found.FullName)" >> $env:GITHUB_OUTPUT
         Write-Host "makeappx: $($found.FullName)"
