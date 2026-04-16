@@ -41,14 +41,19 @@ $files | ForEach-Object { (Get-Content $_) -replace 'OLD','NEW' | Set-Content $_
 
 ## Step 2 — Replace placeholder assets
 
-All 7 files in `AdbExtension/Assets/` are generic Microsoft template images. Replace with custom branding:
-- `StoreLogo.png`
-- `Square44x44Logo.scale-200.png`
-- `Square44x44Logo.targetsize-24_altform-unplated.png`
-- `Square150x150Logo.scale-200.png`
-- `Wide310x150Logo.scale-200.png`
-- `SplashScreen.scale-200.png`
-- `LockScreenLogo.scale-200.png`
+All files in `AdbExtension/Assets/` are generic Microsoft template images. Replace with custom branding.
+
+The build target in `AdbExtension.csproj` auto-copies scale-specific files to the base filenames the Store expects — you only need to provide the `scale-200` variants and `StoreLogo.png`.
+
+| File to create | Size | Notes |
+|---|---|---|
+| `Assets\Square44x44Logo.scale-200.png` | 44×44 | Also copied to `SmallTile.png` (71×71 — use same file) |
+| `Assets\Square150x150Logo.scale-200.png` | 150×150 | Also copied to `LargeTile.png` (310×310 — use same file) |
+| `Assets\Wide310x150Logo.scale-200.png` | 310×150 | |
+| `Assets\SplashScreen.scale-200.png` | 620×300 | |
+| `Assets\StoreLogo.png` | 50×50 | |
+
+> Use Visual Studio's asset generation tool to produce all variants from a single source image: right-click `Package.appxmanifest` → Visual Assets.
 
 ---
 
