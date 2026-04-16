@@ -1,6 +1,6 @@
 ; Inno Setup Script for ADB Extension for Command Palette
 
-#define AppVersion "1.0.0.0"
+#define AppVersion "1.0.0.1"
 
 [Setup]
 AppId={{d857a76b-60ad-4db5-a14c-22f1d4f7bfaa}}

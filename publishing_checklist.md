@@ -11,7 +11,7 @@ The extension was scaffolded from Microsoft's template, which leaves several pla
 ### ~~Step 1 — Fixes you can do RIGHT NOW~~ ✅ DONE
 
 **`AdbExtension/Package.appxmanifest`** — all updated:
-- Version: `1.0.0.0`
+- Version: `1.0.0.1`
 - All display names: `ADB Extension for Command Palette`
 - All descriptions: `Run ADB commands for connected Android devices directly from Command Palette.`
 
@@ -42,7 +42,7 @@ The extension was scaffolded from Microsoft's template, which leaves several pla
 <Identity
   Name="<from Partner Center>"
   Publisher="<from Partner Center>"
-  Version="1.0.0.0" />
+  Version="1.0.0.1" />
 <Properties>
   <PublisherDisplayName><from Partner Center></PublisherDisplayName>
   ...
@@ -65,7 +65,7 @@ The extension was scaffolded from Microsoft's template, which leaves several pla
 cd AdbExtension\AdbExtension
 dotnet build --configuration Release -p:GenerateAppxPackageOnBuild=true -p:Platform=x64 -p:AppxPackageDir="AppPackages\x64\"
 dotnet build --configuration Release -p:GenerateAppxPackageOnBuild=true -p:Platform=ARM64 -p:AppxPackageDir="AppPackages\ARM64\"
-makeappx bundle /v /d bin\Release\ /p AdbExtensionForCommandPalette_1.0.0.0_Bundle.msixbundle
+makeappx bundle /v /d bin\Release\ /p AdbExtensionForCommandPalette_1.0.0.1_Bundle.msixbundle
 ```
 
 Upload `.msixbundle` to Partner Center. In the Store description, note that reviewer needs PowerToys + Command Palette installed.
