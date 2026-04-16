@@ -8,6 +8,26 @@ The `Package.appxmanifest` is already correctly configured with the `com.microso
 
 ---
 
+## Step 0 — Bump version (every release)
+
+Update the version number in all of these files:
+
+| File | Field |
+|---|---|
+| `AdbExtension/AdbExtension.csproj` | `<AppxPackageVersion>` |
+| `AdbExtension/Package.appxmanifest` | `Identity Version=` |
+| `AdbExtension/app.manifest` | `assemblyIdentity version=` |
+| `AdbExtension/setup-template.iss` | `#define AppVersion` |
+| `AdbExtension/build-exe.ps1` | `[string]$Version` default parameter |
+
+Quick one-liner to update all at once (replace `OLD` and `NEW`):
+```powershell
+$files = @("AdbExtension/AdbExtension.csproj","AdbExtension/Package.appxmanifest","AdbExtension/app.manifest","AdbExtension/setup-template.iss","AdbExtension/build-exe.ps1")
+$files | ForEach-Object { (Get-Content $_) -replace 'OLD','NEW' | Set-Content $_ }
+```
+
+---
+
 ## Step 1 — Manifest fixes ✅ DONE
 
 **`AdbExtension/Package.appxmanifest`** — updated:
@@ -60,16 +80,22 @@ All 7 files in `AdbExtension/Assets/` are generic Microsoft template images. Rep
 
 ---
 
-## Step 4 — Build MSIX bundle
+## Step 4 — Build MSIX bundle via GitHub Actions
 
-```
-cd AdbExtension\AdbExtension
-dotnet build --configuration Release -p:GenerateAppxPackageOnBuild=true -p:Platform=x64 -p:AppxPackageDir="AppPackages\x64\"
-dotnet build --configuration Release -p:GenerateAppxPackageOnBuild=true -p:Platform=ARM64 -p:AppxPackageDir="AppPackages\ARM64\"
-makeappx bundle /v /d bin\Release\ /p AdbExtensionForCommandPalette_1.0.0.2_Bundle.msixbundle
-```
+Create `.github/workflows/release-msix.yml` to replace the existing EXE release workflow. It should:
 
-Upload `.msixbundle` to Partner Center. Note in the Store description that reviewers need PowerToys + Command Palette installed to test it.
+1. Trigger on `workflow_dispatch` with version and release notes inputs (same pattern as `release-extension.yml`)
+2. Build x64 and ARM64 with `dotnet build -p:GenerateAppxPackageOnBuild=true`
+3. Bundle both into a `.msixbundle` via `makeappx`
+4. Sign with `signtool` using a PFX certificate stored as a GitHub secret (`SIGNING_CERT_PFX` base64 + `SIGNING_CERT_PASSWORD`)
+5. Create a GitHub Release and attach the `.msixbundle`
+6. Update `update-winget.yml` to point at the `.msixbundle` URL — the current workflow constructs two separate x64/ARM64 EXE URLs which won't apply; a bundle is a single file covering both architectures
+
+**Required GitHub secrets to add before running:**
+- `SIGNING_CERT_PFX` — base64-encoded PFX certificate
+- `SIGNING_CERT_PASSWORD` — certificate password
+
+> The existing `release-extension.yml` (EXE/Inno Setup) can be kept but is no longer the primary release path.
 
 ---
 
