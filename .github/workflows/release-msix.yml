@@ -73,8 +73,10 @@ jobs:
       id: msix
       run: |
         Set-Location "${{ env.FOLDER_NAME }}"
-        $x64 = Get-ChildItem "AppPackages\x64" -Recurse -Filter "*_x64.msix" | Select-Object -First 1
-        $arm64 = Get-ChildItem "AppPackages\ARM64" -Recurse -Filter "*_arm64.msix" | Select-Object -First 1
+        Write-Host "All MSIX files found:"
+        Get-ChildItem "." -Recurse -Filter "*.msix" | ForEach-Object { Write-Host $_.FullName }
+        $x64 = Get-ChildItem "." -Recurse -Filter "*.msix" | Where-Object { $_.Name -match "x64" } | Select-Object -First 1
+        $arm64 = Get-ChildItem "." -Recurse -Filter "*.msix" | Where-Object { $_.Name -match "arm64" } | Select-Object -First 1
         if (-not $x64) { throw "x64 MSIX not found" }
         if (-not $arm64) { throw "ARM64 MSIX not found" }
         echo "X64_PATH=$($x64.FullName)" >> $env:GITHUB_OUTPUT
