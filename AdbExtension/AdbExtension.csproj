@@ -87,8 +87,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'!='Debug'">
-    <!-- Trimming disabled: Shmuelie.WinRTServer is not trim-safe and crashes at startup when trimmed -->
-    <PublishTrimmed>false</PublishTrimmed>
+    <!-- In Release builds, trimming is enabled by default.
+         feel free to disable this if needed -->
+    <PublishTrimmed>true</PublishTrimmed>
+
+    <!-- In release, also ignore the aforementioned ILLink warning -->
+    <ILLinkTreatWarningsAsErrors>false</ILLinkTreatWarningsAsErrors>
   </PropertyGroup>
 
 
