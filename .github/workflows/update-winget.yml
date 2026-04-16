@@ -59,16 +59,14 @@ jobs:
           $version = "${{ steps.release.outputs.VERSION }}"
           $tag = "${{ steps.release.outputs.TAG }}"
 
-          $x64Url = "https://github.com/${{ env.GITHUB_USER_NAME }}/${{ env.GITHUB_REPO }}/releases/download/$tag/${{ env.EXTENSION_NAME }}-Setup-$version-x64.exe"
-          $arm64Url = "https://github.com/${{ env.GITHUB_USER_NAME }}/${{ env.GITHUB_REPO }}/releases/download/$tag/${{ env.EXTENSION_NAME }}-Setup-$version-arm64.exe"
+          $bundleUrl = "https://github.com/${{ env.GITHUB_USER_NAME }}/${{ env.GITHUB_REPO }}/releases/download/$tag/${{ env.EXTENSION_NAME }}_${version}_Bundle.msixbundle"
 
           Write-Host "Updating WinGet manifest for version $version"
-          Write-Host "x64 URL: $x64Url"
-          Write-Host "ARM64 URL: $arm64Url"
+          Write-Host "Bundle URL: $bundleUrl"
 
           .\wingetcreate.exe update ${{ env.WINGET_PACKAGE_ID }} `
             --version $version `
-            --urls "$x64Url|x64" "$arm64Url|arm64" `
+            --urls "$bundleUrl|x64|arm64" `
             --token $env:GITHUB_TOKEN `
             --submit
         shell: pwsh
