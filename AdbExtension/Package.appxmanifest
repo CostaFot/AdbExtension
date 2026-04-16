@@ -11,7 +11,7 @@
   <Identity
     Name="AdbExtension"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    Version="1.0.0.1" />
+    Version="1.0.0.2" />
   <!-- When you're ready to publish your extension, you'll need to change the
        Publisher= to match your own identity -->
 
