@@ -74,13 +74,11 @@ The build target in `AdbExtension.csproj` auto-copies scale-specific files to th
 </Properties>
 ```
 
-4. Add signing config to `AdbExtension.csproj` first `<PropertyGroup>`:
+4. Also update `AdbExtension.csproj` with the same identity values:
 
 ```xml
-<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
-<PackageCertificateThumbprint></PackageCertificateThumbprint>
-<AppxBundle>Always</AppxBundle>
-<AppxBundlePlatforms>x64|ARM64</AppxBundlePlatforms>
+<AppxPackageIdentityName>YOUR_PACKAGE_IDENTITY_NAME_HERE</AppxPackageIdentityName>
+<AppxPackagePublisher>YOUR_PACKAGE_IDENTITY_PUBLISHER_HERE</AppxPackagePublisher>
 ```
 
 ---
@@ -91,12 +89,12 @@ Create `.github/workflows/release-msix.yml` to replace the existing EXE release 
 
 1. Trigger on `workflow_dispatch` with version and release notes inputs (same pattern as `release-extension.yml`)
 2. Build x64 and ARM64 with `dotnet build -p:GenerateAppxPackageOnBuild=true`
-3. Bundle both into a `.msixbundle` via `makeappx`
-4. Sign with `signtool` using a PFX certificate stored as a GitHub secret (`SIGNING_CERT_PFX` base64 + `SIGNING_CERT_PASSWORD`)
+3. Bundle both into a `.msixbundle` via `makeappx bundle /f bundle_mapping.txt`
+4. Sign with `signtool` using a self-signed PFX stored as a GitHub secret (`SIGNING_CERT_PFX` base64 + `SIGNING_CERT_PASSWORD`) — required for GitHub Releases installs; Store submission re-signs automatically
 5. Create a GitHub Release and attach the `.msixbundle`
-6. Update `update-winget.yml` to point at the `.msixbundle` URL — the current workflow constructs two separate x64/ARM64 EXE URLs which won't apply; a bundle is a single file covering both architectures
+6. Upload the same `.msixbundle` to Partner Center for Store submission
 
-**Required GitHub secrets to add before running:**
+**Required GitHub secrets:**
 - `SIGNING_CERT_PFX` — base64-encoded PFX certificate
 - `SIGNING_CERT_PASSWORD` — certificate password
 
@@ -108,8 +106,8 @@ Create `.github/workflows/release-msix.yml` to replace the existing EXE release 
 
 | Option | Effort | Notes |
 |---|---|---|
-| Microsoft Store | Medium | Best for discoverability. Requires Partner Center + signing cert from Step 3. |
-| GitHub Releases (MSIX) | Low | Attach `.msixbundle` to GitHub Release. Users install via double-click or `Add-AppxPackage`. Requires self-signed cert or trusted CA cert. |
+| Microsoft Store | Medium | Best for discoverability. Requires Partner Center (Step 3). Store signs the package. |
+| GitHub Releases (MSIX) | Low | Attach `.msixbundle` to GitHub Release. Users install via double-click or `Add-AppxPackage`. Requires self-signed cert. |
 
 ---
 
