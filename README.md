@@ -10,6 +10,27 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 - [Android Platform Tools](https://developer.android.com/tools/releases/platform-tools) — `adb.exe` must be in your `PATH`
 - A connected Android device or running emulator
 
+## Installation
+
+### Microsoft Store (recommended)
+
+Install from the Microsoft Store - it works out of the box.
+
+[Install from Microsoft Store](#) ← link coming soon
+
+### Manual MSIX (sideload)
+
+Download the `.msixbundle` from the [latest GitHub Release](https://github.com/CostaFot/AdbExtension/releases/latest). Before installing, you'll need to trust the self-signed certificate:
+
+1. Right-click the `.msixbundle` → Properties → Digital Signatures → select the cert → Details → View Certificate → Install Certificate
+2. Store location: **Local Machine** → **Trusted People**
+3. Double-click the `.msixbundle` to install
+
+
+### WinGet
+
+Initially tried publishing on WinGet, but unfortunately found out Command Palette extensions require MSIX packaging with a valid (expensive!) code signing certificate so they can be discoverable. So yeah, ignore WinGet for now.
+
 ## Features
 
 ### ADB App Commands
@@ -67,32 +88,11 @@ Turns Wi-Fi on or off.
 
 ### ADB Enable / Disable Mobile Data
 
-Turns mobile data on or off.C:\Users\jarla\Downloads\apks
+Turns mobile data on or off.
 
 ### ADB Launch Deep Link
 
 Fire an arbitrary deep link without targeting a specific package.
-
-## Installation
-
-### Microsoft Store (recommended)
-
-Install from the Microsoft Store - it works out of the box.
-
-[Install from Microsoft Store](#) ← link coming soon
-
-### Manual MSIX (sideload)
-
-Download the `.msixbundle` from the [latest GitHub Release](https://github.com/CostaFot/AdbExtension/releases/latest). Before installing, you'll need to trust the self-signed certificate:
-
-1. Right-click the `.msixbundle` → Properties → Digital Signatures → select the cert → Details → View Certificate → Install Certificate
-2. Store location: **Local Machine** → **Trusted People**
-3. Double-click the `.msixbundle` to install
-
-
-### WinGet
-
-Initially tried publishing on WinGet, but unfortunately found out Command Palette extensions require MSIX packaging with a valid (expensive!) code signing certificate so they can be discoverable. So yeah, ignore WinGet for now.
 
 ## Wishlist
 
