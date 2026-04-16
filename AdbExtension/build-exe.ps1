@@ -1,7 +1,7 @@
 param(
     [string]$ExtensionName = "AdbExtension",
     [string]$Configuration = "Release",
-    [string]$Version = "1.0.0.2",
+    [string]$Version = "1.0.0.3",
     [string[]]$Platforms = @("x64", "arm64")
 )
 

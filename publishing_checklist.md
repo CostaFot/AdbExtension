@@ -17,12 +17,10 @@ Update the version number in all of these files:
 | `AdbExtension/AdbExtension.csproj` | `<AppxPackageVersion>` |
 | `AdbExtension/Package.appxmanifest` | `Identity Version=` |
 | `AdbExtension/app.manifest` | `assemblyIdentity version=` |
-| `AdbExtension/setup-template.iss` | `#define AppVersion` |
-| `AdbExtension/build-exe.ps1` | `[string]$Version` default parameter |
 
 Quick one-liner to update all at once (replace `OLD` and `NEW`):
 ```powershell
-$files = @("AdbExtension/AdbExtension.csproj","AdbExtension/Package.appxmanifest","AdbExtension/app.manifest","AdbExtension/setup-template.iss","AdbExtension/build-exe.ps1")
+$files = @("AdbExtension/AdbExtension.csproj","AdbExtension/Package.appxmanifest","AdbExtension/app.manifest")
 $files | ForEach-Object { (Get-Content $_) -replace 'OLD','NEW' | Set-Content $_ }
 ```
 
@@ -31,69 +29,40 @@ $files | ForEach-Object { (Get-Content $_) -replace 'OLD','NEW' | Set-Content $_
 ## Step 1 — Manifest fixes ✅ DONE
 
 **`AdbExtension/Package.appxmanifest`** — updated:
-- Version: `1.0.0.2`
+- Identity `Name`, `Publisher`, `PublisherDisplayName` filled in from Partner Center
+- Version: `1.0.0.3`
 - Display name: `ADB Extension for Command Palette`
 - Description: `Run ADB commands for connected Android devices directly from Command Palette.`
 
-> **Note:** `Identity/Name`, `Identity/Publisher`, and `Properties/PublisherDisplayName` are still scaffold defaults — fill in after Partner Center registration (Step 2).
+---
+
+## Step 2 — Replace placeholder assets ✅ DONE
+
+All scale variants generated via Visual Studio's Visual Assets tool and committed.
 
 ---
 
-## Step 2 — Replace placeholder assets
+## Step 3 — Partner Center registration & publisher identity ✅ DONE
 
-All 7 files in `AdbExtension/Assets/` are generic Microsoft template images. Replace with custom branding:
-- `StoreLogo.png`
-- `Square44x44Logo.scale-200.png`
-- `Square44x44Logo.targetsize-24_altform-unplated.png`
-- `Square150x150Logo.scale-200.png`
-- `Wide310x150Logo.scale-200.png`
-- `SplashScreen.scale-200.png`
-- `LockScreenLogo.scale-200.png`
+Identity values copied from Partner Center and applied to both `Package.appxmanifest` and `AdbExtension.csproj`.
 
 ---
 
-## Step 3 — Partner Center registration & publisher identity
+## Step 4 — Build MSIX bundle via GitHub Actions ✅ DONE
 
-1. Register in **Microsoft Partner Center** → Apps and games → New Product → MSIX or PWA app.
-2. Reserve product name: `ADB Extension for Command Palette`.
-3. From **Product Management → Product identity**, copy and update `Package.appxmanifest`:
+`.github/workflows/release-msix.yml` created. It:
 
-```xml
-<Identity
-  Name="<from Partner Center>"
-  Publisher="<from Partner Center>"
-  Version="1.0.0.2" />
-<Properties>
-  <PublisherDisplayName><from Partner Center></PublisherDisplayName>
-  ...
-</Properties>
-```
+1. Triggers on `workflow_dispatch` with version and release notes inputs
+2. Builds x64 and ARM64 with `dotnet build -p:GenerateAppxPackageOnBuild=true`
+3. Bundles both into a `.msixbundle` via `makeappx bundle /f bundle_mapping.txt`
+4. Signs with `signtool` using the self-signed PFX from GitHub secrets
+5. Creates a GitHub Release and attaches the `.msixbundle`
 
-4. Add signing config to `AdbExtension.csproj` first `<PropertyGroup>`:
+**GitHub secrets set:**
+- `SIGNING_CERT_PFX` ✅
+- `SIGNING_CERT_PASSWORD` ✅
 
-```xml
-<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
-<PackageCertificateThumbprint></PackageCertificateThumbprint>
-<AppxBundle>Always</AppxBundle>
-<AppxBundlePlatforms>x64|ARM64</AppxBundlePlatforms>
-```
-
----
-
-## Step 4 — Build MSIX bundle via GitHub Actions
-
-Create `.github/workflows/release-msix.yml` to replace the existing EXE release workflow. It should:
-
-1. Trigger on `workflow_dispatch` with version and release notes inputs (same pattern as `release-extension.yml`)
-2. Build x64 and ARM64 with `dotnet build -p:GenerateAppxPackageOnBuild=true`
-3. Bundle both into a `.msixbundle` via `makeappx`
-4. Sign with `signtool` using a PFX certificate stored as a GitHub secret (`SIGNING_CERT_PFX` base64 + `SIGNING_CERT_PASSWORD`)
-5. Create a GitHub Release and attach the `.msixbundle`
-6. Update `update-winget.yml` to point at the `.msixbundle` URL — the current workflow constructs two separate x64/ARM64 EXE URLs which won't apply; a bundle is a single file covering both architectures
-
-**Required GitHub secrets to add before running:**
-- `SIGNING_CERT_PFX` — base64-encoded PFX certificate
-- `SIGNING_CERT_PASSWORD` — certificate password
+**Signing cert:** `AdbExtension/signing.pfx` — gitignored, back it up outside the repo.
 
 > The existing `release-extension.yml` (EXE/Inno Setup) can be kept but is no longer the primary release path.
 
@@ -103,8 +72,8 @@ Create `.github/workflows/release-msix.yml` to replace the existing EXE release 
 
 | Option | Effort | Notes |
 |---|---|---|
-| Microsoft Store | Medium | Best for discoverability. Requires Partner Center + signing cert from Step 3. |
-| GitHub Releases (MSIX) | Low | Attach `.msixbundle` to GitHub Release. Users install via double-click or `Add-AppxPackage`. Requires self-signed cert or trusted CA cert. |
+| Microsoft Store | Medium | Best for discoverability. Upload `.msixbundle` to Partner Center — Store re-signs automatically. |
+| GitHub Releases (MSIX) | Low | Attach `.msixbundle` to GitHub Release. Users install via double-click or `Add-AppxPackage`. Signed with self-signed cert. |
 
 ---
 
