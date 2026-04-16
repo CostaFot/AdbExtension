@@ -9,15 +9,13 @@
   IgnorableNamespaces="uap uap3 rescap">
 
   <Identity
-    Name="AdbExtension"
-    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    Version="1.0.0.2" />
-  <!-- When you're ready to publish your extension, you'll need to change the
-       Publisher= to match your own identity -->
+    Name="CostaFotiadis.ADBExtensionforCommandPalette"
+    Publisher="CN=3D57AA92-97A9-42D2-8CB0-4207D9145514"
+    Version="1.0.0.3" />
 
   <Properties>
     <DisplayName>ADB Extension for Command Palette</DisplayName>
-    <PublisherDisplayName>A Lone Developer</PublisherDisplayName>
+    <PublisherDisplayName>Costa Fotiadis</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
