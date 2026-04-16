@@ -10,11 +10,13 @@ AppExtensionCatalog.Open("com.microsoft.commandpalette").FindAllAsync();
 
 **This API only works with MSIX packages.** It reads the `windows.appExtension` declaration from `Package.appxmanifest`. An EXE installer has no way to register with this catalog — so PowerToys never discovers the extension, regardless of how correct the registry entries are.
 
-The PowerToys spec mentions a registry-based fallback for unpackaged extensions at:
-```
-HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DevPal\Extensions
-```
-But it is marked as TODO and not implemented as of April 2026.
+There is no alternative discovery mechanism. Verified against the PowerToys source (April 2026):
+
+- No registry-based fallback exists — not even as a TODO
+- No file or directory scanning
+- No unpackaged extension loading of any kind
+
+The codebase does define an `AppPackagingFlavor` enum with `Unpackaged` and `UnpackagedPortable` values (`Microsoft.CmdPal.Common/AppPackagingFlavor.cs`), and `ApplicationInfoService.cs` has a comment noting portable support is planned. But this enum is **never consulted during extension discovery** — it only appears in diagnostic logging. There is no code path that would ever load an unpackaged extension.
 
 ---
 
