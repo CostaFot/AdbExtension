@@ -54,7 +54,7 @@ jobs:
 
       - name: Update WinGet manifest
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.WINGET_TOKEN }}
         run: |
           $version = "${{ steps.release.outputs.VERSION }}"
           $tag = "${{ steps.release.outputs.TAG }}"
@@ -66,7 +66,7 @@ jobs:
 
           .\wingetcreate.exe update ${{ env.WINGET_PACKAGE_ID }} `
             --version $version `
-            --urls "$bundleUrl|x64|arm64" `
-            --token $env:GITHUB_TOKEN `
+            --urls "$bundleUrl|neutral" `
+            --token "${{ secrets.WINGET_TOKEN }}" `
             --submit
         shell: pwsh
