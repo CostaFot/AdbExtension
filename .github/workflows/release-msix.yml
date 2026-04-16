@@ -53,6 +53,7 @@ jobs:
       run: |
         Set-Location "${{ env.FOLDER_NAME }}"
         dotnet build --configuration Release `
+          -r win-x64 `
           -p:GenerateAppxPackageOnBuild=true `
           -p:Platform=x64 `
           -p:AppxPackageDir="AppPackages\x64\"
@@ -62,6 +63,7 @@ jobs:
       run: |
         Set-Location "${{ env.FOLDER_NAME }}"
         dotnet build --configuration Release `
+          -r win-arm64 `
           -p:GenerateAppxPackageOnBuild=true `
           -p:Platform=ARM64 `
           -p:AppxPackageDir="AppPackages\ARM64\"
