@@ -1,0 +1,159 @@
+name: Build and Release MSIX
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (leave empty to auto-detect from csproj)'
+        required: false
+        type: string
+      release_notes:
+        description: 'What is new in this version'
+        required: false
+        default: 'Updates happened.'
+        type: string
+
+env:
+  DISPLAY_NAME: ADB Extension for Command Palette
+  EXTENSION_NAME: AdbExtension
+  FOLDER_NAME: AdbExtension
+
+jobs:
+  build:
+    runs-on: windows-2022
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Get version from project
+      id: version
+      run: |
+        if ("${{ github.event.inputs.version }}" -ne "") {
+          $version = "${{ github.event.inputs.version }}"
+        } else {
+          $projectFile = "${{ env.FOLDER_NAME }}/${{ env.EXTENSION_NAME }}.csproj"
+          $xml = [xml](Get-Content $projectFile)
+          $version = $xml.Project.PropertyGroup.AppxPackageVersion | Select-Object -First 1
+          if (-not $version) { throw "Version not found in project file" }
+        }
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+        Write-Host "Using version: $version"
+      shell: pwsh
+
+    - name: Build x64 MSIX
+      run: |
+        Set-Location "${{ env.FOLDER_NAME }}"
+        dotnet build --configuration Release `
+          -p:GenerateAppxPackageOnBuild=true `
+          -p:Platform=x64 `
+          -p:AppxPackageDir="AppPackages\x64\"
+      shell: pwsh
+
+    - name: Build ARM64 MSIX
+      run: |
+        Set-Location "${{ env.FOLDER_NAME }}"
+        dotnet build --configuration Release `
+          -p:GenerateAppxPackageOnBuild=true `
+          -p:Platform=ARM64 `
+          -p:AppxPackageDir="AppPackages\ARM64\"
+      shell: pwsh
+
+    - name: Find MSIX files
+      id: msix
+      run: |
+        Set-Location "${{ env.FOLDER_NAME }}"
+        $x64 = Get-ChildItem "AppPackages\x64" -Recurse -Filter "*_x64.msix" | Select-Object -First 1
+        $arm64 = Get-ChildItem "AppPackages\ARM64" -Recurse -Filter "*_arm64.msix" | Select-Object -First 1
+        if (-not $x64) { throw "x64 MSIX not found" }
+        if (-not $arm64) { throw "ARM64 MSIX not found" }
+        echo "X64_PATH=$($x64.FullName)" >> $env:GITHUB_OUTPUT
+        echo "ARM64_PATH=$($arm64.FullName)" >> $env:GITHUB_OUTPUT
+        Write-Host "x64:   $($x64.FullName)"
+        Write-Host "arm64: $($arm64.FullName)"
+      shell: pwsh
+
+    - name: Create bundle mapping
+      run: |
+        Set-Location "${{ env.FOLDER_NAME }}"
+        $x64Rel = (Resolve-Path -Relative "${{ steps.msix.outputs.X64_PATH }}")
+        $arm64Rel = (Resolve-Path -Relative "${{ steps.msix.outputs.ARM64_PATH }}")
+        $bundleName = "${{ env.EXTENSION_NAME }}_${{ steps.version.outputs.VERSION }}_x64.msix"
+        $bundleArm = "${{ env.EXTENSION_NAME }}_${{ steps.version.outputs.VERSION }}_arm64.msix"
+        @"
+[Files]
+"$x64Rel" "$bundleName"
+"$arm64Rel" "$bundleArm"
+"@ | Set-Content bundle_mapping.txt
+        Get-Content bundle_mapping.txt
+      shell: pwsh
+
+    - name: Find makeappx
+      id: makeappx
+      run: |
+        $arch = switch ($env:PROCESSOR_ARCHITECTURE) { "AMD64" { "x64" } "ARM64" { "arm64" } default { "x64" } }
+        $found = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\$arch\makeappx.exe" -ErrorAction SilentlyContinue `
+          | Sort-Object Name -Descending | Select-Object -First 1
+        if (-not $found) { throw "makeappx.exe not found" }
+        echo "PATH=$($found.FullName)" >> $env:GITHUB_OUTPUT
+        Write-Host "makeappx: $($found.FullName)"
+      shell: pwsh
+
+    - name: Bundle x64 + ARM64 into msixbundle
+      run: |
+        Set-Location "${{ env.FOLDER_NAME }}"
+        $bundle = "${{ env.EXTENSION_NAME }}_${{ steps.version.outputs.VERSION }}_Bundle.msixbundle"
+        & "${{ steps.makeappx.outputs.PATH }}" bundle /v /f bundle_mapping.txt /p $bundle
+        echo "BUNDLE_PATH=${{ env.FOLDER_NAME }}\$bundle" >> $env:GITHUB_ENV
+      shell: pwsh
+
+    - name: Decode and import signing certificate
+      run: |
+        $pfxBytes = [Convert]::FromBase64String("${{ secrets.SIGNING_CERT_PFX }}")
+        $pfxPath = "$env:RUNNER_TEMP\signing.pfx"
+        [IO.File]::WriteAllBytes($pfxPath, $pfxBytes)
+        echo "PFX_PATH=$pfxPath" >> $env:GITHUB_ENV
+      shell: pwsh
+
+    - name: Sign msixbundle
+      run: |
+        $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe" -ErrorAction SilentlyContinue `
+          | Sort-Object Name -Descending | Select-Object -First 1
+        if (-not $signtool) { throw "signtool.exe not found" }
+        & $signtool sign /fd SHA256 /p "${{ secrets.SIGNING_CERT_PASSWORD }}" /f "$env:PFX_PATH" "$env:BUNDLE_PATH"
+      shell: pwsh
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.version.outputs.VERSION }}
+        name: "${{ env.DISPLAY_NAME }} v${{ steps.version.outputs.VERSION }}"
+        body: |
+          ## ${{ env.DISPLAY_NAME }} v${{ steps.version.outputs.VERSION }}
+
+          ## What's New
+          ${{ github.event.inputs.release_notes }}
+
+          ## Installation
+
+          Download and double-click `${{ env.EXTENSION_NAME }}_${{ steps.version.outputs.VERSION }}_Bundle.msixbundle`.
+
+          > **Note:** The package is self-signed. If Windows blocks installation, right-click the `.msixbundle` → Properties → Digital Signatures → install the certificate to "Trusted People" first.
+
+          Alternatively, install via PowerShell:
+          ```powershell
+          Add-AppxPackage .\${{ env.EXTENSION_NAME }}_${{ steps.version.outputs.VERSION }}_Bundle.msixbundle
+          ```
+        files: ${{ env.FOLDER_NAME }}/${{ env.EXTENSION_NAME }}_${{ steps.version.outputs.VERSION }}_Bundle.msixbundle
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
