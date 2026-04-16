@@ -1,23 +1,27 @@
-# Publishing Prep Plan — ADB Extension for Command Palette
+# Publishing Plan — ADB Extension for Command Palette
 
 ## Context
 
-The extension was scaffolded from Microsoft's template, which leaves several placeholder/default values in the manifest and csproj. Before submitting to Partner Center or WinGet, these need to be cleaned up. Some changes can be made immediately; others require first registering in Partner Center to get your Publisher identity.
+PowerToys Command Palette discovers extensions via the Windows `AppExtensionCatalog` API, which **only works with MSIX packages**. The EXE/WinGet approach does not work — see `winget-dead-end.md` for the full post-mortem.
+
+The `Package.appxmanifest` is already correctly configured with the `com.microsoft.commandpalette` app extension declaration. The path forward is MSIX only.
 
 ---
 
-## Track A: Microsoft Store (MSIX bundle)
+## Step 1 — Manifest fixes ✅ DONE
 
-### ~~Step 1 — Fixes you can do RIGHT NOW~~ ✅ DONE
-
-**`AdbExtension/Package.appxmanifest`** — all updated:
+**`AdbExtension/Package.appxmanifest`** — updated:
 - Version: `1.0.0.2`
-- All display names: `ADB Extension for Command Palette`
-- All descriptions: `Run ADB commands for connected Android devices directly from Command Palette.`
+- Display name: `ADB Extension for Command Palette`
+- Description: `Run ADB commands for connected Android devices directly from Command Palette.`
 
-> **Note:** `Identity/Name`, `Identity/Publisher`, and `Properties/PublisherDisplayName` are left as scaffold defaults — fill in after Partner Center registration (Step 2).
+> **Note:** `Identity/Name`, `Identity/Publisher`, and `Properties/PublisherDisplayName` are still scaffold defaults — fill in after Partner Center registration (Step 2).
 
-**Assets (`AdbExtension/Assets/`)** — all 7 files are generic Microsoft template images. Replace with custom branding. Required files:
+---
+
+## Step 2 — Replace placeholder assets
+
+All 7 files in `AdbExtension/Assets/` are generic Microsoft template images. Replace with custom branding:
 - `StoreLogo.png`
 - `Square44x44Logo.scale-200.png`
 - `Square44x44Logo.targetsize-24_altform-unplated.png`
@@ -28,16 +32,12 @@ The extension was scaffolded from Microsoft's template, which leaves several pla
 
 ---
 
-### Step 2 — After Partner Center registration
+## Step 3 — Partner Center registration & publisher identity
 
 1. Register in **Microsoft Partner Center** → Apps and games → New Product → MSIX or PWA app.
-2. Reserve product name (e.g. `ADB Extension for Command Palette`).
-3. From **Product Management → Product identity**, copy:
-   - `Package/Identity/Name`
-   - `Package/Identity/Publisher`
-   - `Package/Properties/PublisherDisplayName`
+2. Reserve product name: `ADB Extension for Command Palette`.
+3. From **Product Management → Product identity**, copy and update `Package.appxmanifest`:
 
-**Update `Package.appxmanifest`** with copied values:
 ```xml
 <Identity
   Name="<from Partner Center>"
@@ -49,7 +49,8 @@ The extension was scaffolded from Microsoft's template, which leaves several pla
 </Properties>
 ```
 
-**Update `AdbExtension.csproj`** — add to the first unconditional `<PropertyGroup>`:
+4. Add signing config to `AdbExtension.csproj` first `<PropertyGroup>`:
+
 ```xml
 <AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
 <PackageCertificateThumbprint></PackageCertificateThumbprint>
@@ -59,7 +60,7 @@ The extension was scaffolded from Microsoft's template, which leaves several pla
 
 ---
 
-### Step 3 — Build MSIX bundle
+## Step 4 — Build MSIX bundle
 
 ```
 cd AdbExtension\AdbExtension
@@ -68,51 +69,20 @@ dotnet build --configuration Release -p:GenerateAppxPackageOnBuild=true -p:Platf
 makeappx bundle /v /d bin\Release\ /p AdbExtensionForCommandPalette_1.0.0.2_Bundle.msixbundle
 ```
 
-Upload `.msixbundle` to Partner Center. In the Store description, note that reviewer needs PowerToys + Command Palette installed.
+Upload `.msixbundle` to Partner Center. Note in the Store description that reviewers need PowerToys + Command Palette installed to test it.
 
 ---
 
-## Track B: WinGet (EXE installer via Inno Setup + GitHub Actions)
+## Step 5 — Distribution options
 
-### Step 4 — Modify csproj for WinGet publishing
-
-In `AdbExtension/AdbExtension.csproj`, in the first `<PropertyGroup>`:
-- Remove: `<PublishProfile>win-$(Platform).pubxml</PublishProfile>`
-- Add: `<WindowsPackageType>None</WindowsPackageType>`
-
-### Step 5 — Create build scripts
-
-Create in `AdbExtension/AdbExtension/`:
-- `setup-template.iss` — Inno Setup installer config (use template from MS docs, fill in CLSID `d857a76b-60ad-4db5-a14c-22f1d4f7bfaa` and app metadata)
-- `build-exe.ps1` — PowerShell build script (setup .NET + Inno Setup → dotnet publish → create installer → upload)
-
-### Step 6 — Create GitHub Actions workflow
-
-Create `.github/workflows/release-extension.yml` — automates: build → package → create GitHub Release with x64 + ARM64 `.exe` assets.
-
-### Step 7 — WinGet first submission
-
-After the GitHub Release is created:
-```
-wingetcreate new "<x64 .exe URL>" "<arm64 .exe URL>"
-```
-Follow prompts, add tag `windows-commandpalette-extension` to locale YAML files before submitting.
+| Option | Effort | Notes |
+|---|---|---|
+| Microsoft Store | Medium | Best for discoverability. Requires Partner Center + signing cert from Step 3. |
+| GitHub Releases (MSIX) | Low | Attach `.msixbundle` to GitHub Release. Users install via double-click or `Add-AppxPackage`. Requires self-signed cert or trusted CA cert. |
 
 ---
-
-## Critical files to modify
-
-| File | Changes |
-|---|---|
-| `AdbExtension/Package.appxmanifest` | DisplayName, Description, Version, Publisher identity (post-Partner Center) |
-| `AdbExtension/AdbExtension.csproj` | AppxPackage properties (post-Partner Center), WindowsPackageType swap for WinGet |
-| `AdbExtension/Assets/*.png` | Replace all 7 with custom branding |
-| `AdbExtension/AdbExtension/setup-template.iss` | Create new |
-| `AdbExtension/AdbExtension/build-exe.ps1` | Create new |
-| `.github/workflows/release-extension.yml` | Create new |
 
 ## Verification
 
-- After Step 1: Deploy the MSIX and reload Command Palette — confirm display names are updated throughout
-- After Step 3: `dir *.msixbundle` confirms bundle was created; upload to Partner Center submission
-- After Step 6: Trigger `gh workflow run release-extension.yml` and confirm both `.exe` assets appear in the GitHub Release
+- Install MSIX and reload Command Palette — extension should appear in the list
+- `winget show CostaFotiadis.ADBExtensionforCommandPalette` to confirm Store listing (post-Store submission)
