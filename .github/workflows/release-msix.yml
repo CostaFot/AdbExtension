@@ -88,11 +88,8 @@ jobs:
         $arm64Rel = (Resolve-Path -Relative "${{ steps.msix.outputs.ARM64_PATH }}")
         $bundleName = "${{ env.EXTENSION_NAME }}_${{ steps.version.outputs.VERSION }}_x64.msix"
         $bundleArm = "${{ env.EXTENSION_NAME }}_${{ steps.version.outputs.VERSION }}_arm64.msix"
-        @"
-[Files]
-"$x64Rel" "$bundleName"
-"$arm64Rel" "$bundleArm"
-"@ | Set-Content bundle_mapping.txt
+        $content = "[Files]`n`"$x64Rel`" `"$bundleName`"`n`"$arm64Rel`" `"$bundleArm`""
+        $content | Set-Content bundle_mapping.txt
         Get-Content bundle_mapping.txt
       shell: pwsh
 
