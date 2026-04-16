@@ -18,8 +18,7 @@ env:
   EXTENSION_NAME: AdbExtension
   GITHUB_USER_NAME: CostaFot
   GITHUB_REPO: AdbExtension
-  # Update this after your first winget PR is merged (e.g. CostaFot.AdbExtension)
-  WINGET_PACKAGE_ID: CostaFot.AdbExtension
+  WINGET_PACKAGE_ID: CostaFotiadis.ADBExtensionforCommandPalette
 
 jobs:
   update-winget:
