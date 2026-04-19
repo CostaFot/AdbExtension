@@ -32,7 +32,7 @@ Download the `.msixbundle` from the [latest GitHub Release](https://github.com/C
 
 ### WinGet
 
-Initially tried publishing on WinGet, but unfortunately found out Command Palette extensions require MSIX packaging with a valid (expensive!) code signing certificate so they can be discoverable. So yeah, ignore WinGet for now.
+Will get around it soon™
 
 ## Features
 
