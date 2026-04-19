@@ -40,12 +40,7 @@ It's basically VS Code's Command Palette, except it's your whole operating syste
 
 ## Why not just... use the terminal? / a GUI tool? / Android Studio?
 
-- **Terminal**: that's the whole problem. Typing package names is the bit I wanted to delete.
-- **Android Studio**: fires up a JVM to clear app data. No.
-- **scrcpy / existing GUIs**: great for mirroring, overkill for "clear data on my debug build."
-- **Just memorise the commands, you baby**: this is the correct take. I rejected it.
-
-In this house we still use `adb`, we just don't want to *type* `adb`.
+Global hotkey that works from anywhere, no IDE plugin, no remembering `adb` incantations, and I can extend it with whatever I end up doing the most. In this house we still use `adb`, we just don't want to *type* `adb`.
 
 ## The extension model, in ~30 seconds
 
