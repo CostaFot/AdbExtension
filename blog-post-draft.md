@@ -159,6 +159,25 @@ MSIX + GitHub Actions + Partner Center. `gh workflow run release-msix.yml` build
 
 <!-- MEME PLACEHOLDER: distracted boyfriend, labelled "me", "submitting a new MSIX build", "fixing the actual bug someone reported" -->
 
+## Signing your MSIX. Oh well.
+
+The goal: a proper `winget install` experience with a signed MSIX — same as every other extension in the Command Palette gallery. Turns out that's the only way the gallery install button actually works. So the signed MSIX isn't optional, it's the whole point.
+
+Your signing options, as far as I can tell:
+
+- **Buy a code signing cert** — DigiCert, Sectigo, the usual suspects. ~$100–300/year. For a free open source tool. Debatable.
+- **Azure Trusted Signing** — Microsoft's own service, ~$10/month. Requires identity verification that takes a few business days. Still costs money.
+- **SignPath.io** — free tier for genuine open source projects. Apply, wait, maybe get approved.
+- **Microsoft Store** — they sign it for you. Free. The catch is you now have to deal with the Microsoft Store.
+
+I went with the Store. Submit the MSIX, wait for certification, Microsoft signs it. Then you upload the Store-signed MSIX to your GitHub release and point your WinGet manifest at it — `InstallerType: msix`, proper `SignatureSha256`, done. `winget install` works, gallery install works, everything works.
+
+Getting the Store-signed MSIX *back out* of the Store was its own adventure. `winget download` requires an organisational Microsoft account, apparently — personal accounts need not apply. `store.rg-adguard.net` redirects to HTTP and my browser very politely refused. In the end `msft-store.tplant.com.au` worked fine.
+
+The signed bundle it hands you contains individual per-architecture MSIXes inside — it's just a zip with a fancy extension. Rename it, extract, grab the x64 one, upload to GitHub Releases, run `winget hash --msix` on it, paste the hash into the manifest. Submit PR to winget-pkgs. Done.
+
+<!-- MEME PLACEHOLDER: Thanos "finally. something worked." captioned exactly that -->
+
 ## Anyways
 
 If you're on Windows and you do Android dev, try it:
