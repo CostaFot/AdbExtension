@@ -1,5 +1,11 @@
 # ADB Extension for Command Palette
 
+<a href="https://www.costafotiadis.com/it-looks-like-youre-trying-to-build-an-extension-for-command-palette/">
+  <img src="screenshots/header_blog.png" width="600"/>
+</a>
+
+> Check out the blog post — [here](https://www.costafotiadis.com/it-looks-like-youre-trying-to-build-an-extension-for-command-palette/).
+
 A Windows 11 Command Palette extension (PowerToys) for Android developers. Exposes common ADB operations directly from the command palette.
 
 ![Top-level commands](screenshots/top_level_1.png)
