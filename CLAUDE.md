@@ -193,3 +193,35 @@ PackageInfo[] AdbHelper.GetInstalledPackages();
 // PackageInfo record
 record PackageInfo(string Name, bool IsDebuggable);
 ```
+
+## Releasing a New Version
+
+### Step 1 — Bump version in all 5 files
+
+| File | Field |
+|---|---|
+| `AdbExtension/AdbExtension.csproj` | `<AppxPackageVersion>` |
+| `AdbExtension/Package.appxmanifest` | `Identity Version=` |
+| `AdbExtension/app.manifest` | `assemblyIdentity version=` |
+| `AdbExtension/build-exe.ps1` | `$Version` default param |
+| `AdbExtension/setup-template.iss` | `#define AppVersion` |
+
+One-liner (replace `OLD` and `NEW`):
+```powershell
+$files = @("AdbExtension/AdbExtension.csproj","AdbExtension/Package.appxmanifest","AdbExtension/app.manifest","AdbExtension/build-exe.ps1","AdbExtension/setup-template.iss")
+$files | ForEach-Object { (Get-Content $_) -replace 'OLD','NEW' | Set-Content $_ }
+```
+
+### Step 2 — Trigger the GitHub Actions build
+
+```
+gh workflow run release-msix.yml --ref master -f release_notes="Your release notes here"
+```
+
+This reads the version from the csproj automatically, builds x64 + ARM64, bundles into a `.msixbundle`, signs it, and creates a GitHub Release.
+
+### Step 3 — Submit to Partner Center
+
+1. Download the `.msixbundle` from the GitHub Release
+2. Partner Center → app → new submission → Packages → upload the `.msixbundle`
+3. Update description/notes, submit

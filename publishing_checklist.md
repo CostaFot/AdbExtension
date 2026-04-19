@@ -17,10 +17,12 @@ Update the version number in all of these files:
 | `AdbExtension/AdbExtension.csproj` | `<AppxPackageVersion>` |
 | `AdbExtension/Package.appxmanifest` | `Identity Version=` |
 | `AdbExtension/app.manifest` | `assemblyIdentity version=` |
+| `AdbExtension/build-exe.ps1` | `$Version` default param |
+| `AdbExtension/setup-template.iss` | `#define AppVersion` |
 
 Quick one-liner to update all at once (replace `OLD` and `NEW`):
 ```powershell
-$files = @("AdbExtension/AdbExtension.csproj","AdbExtension/Package.appxmanifest","AdbExtension/app.manifest")
+$files = @("AdbExtension/AdbExtension.csproj","AdbExtension/Package.appxmanifest","AdbExtension/app.manifest","AdbExtension/build-exe.ps1","AdbExtension/setup-template.iss")
 $files | ForEach-Object { (Get-Content $_) -replace 'OLD','NEW' | Set-Content $_ }
 ```
 
@@ -48,21 +50,35 @@ Identity values copied from Partner Center and applied to both `Package.appxmani
 
 ---
 
-## Step 4 — Build MSIX bundle via GitHub Actions ✅ DONE
+## Step 4 — Build MSIX bundle via GitHub Actions
 
-`.github/workflows/release-msix.yml` created. It:
+`.github/workflows/release-msix.yml` — trigger with:
 
-1. Triggers on `workflow_dispatch` with version and release notes inputs
-2. Builds x64 and ARM64 with `dotnet build -p:GenerateAppxPackageOnBuild=true`
-3. Bundles both into a `.msixbundle` via `makeappx bundle /f bundle_mapping.txt`
-4. Signs with `signtool` using the self-signed PFX from GitHub secrets
-5. Creates a GitHub Release and attaches the `.msixbundle`
+```
+gh workflow run release-msix.yml --ref master -f release_notes="Your release notes here"
+```
+
+It auto-reads the version from the csproj. It:
+
+1. Builds x64 and ARM64 with `dotnet build -p:GenerateAppxPackageOnBuild=true`
+2. Bundles both into a `.msixbundle` via `makeappx bundle /f bundle_mapping.txt`
+3. Signs with `signtool` using the self-signed PFX from GitHub secrets
+4. Creates a GitHub Release and attaches the `.msixbundle`
 
 **GitHub secrets set:**
 - `SIGNING_CERT_PFX` ✅
 - `SIGNING_CERT_PASSWORD` ✅
 
 **Signing cert:** `AdbExtension/signing.pfx` — gitignored, back it up outside the repo.
+
+---
+
+## Step 5 — Submit to Partner Center
+
+1. Download the `.msixbundle` from the GitHub Release
+2. Go to Partner Center → your app → start a new submission
+3. Upload the `.msixbundle` in the Packages section
+4. Update description/notes as needed, submit
 
 > The existing `release-extension.yml` (EXE/Inno Setup) can be kept but is no longer the primary release path.
 
