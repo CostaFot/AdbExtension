@@ -153,11 +153,44 @@ Stuff the extension does, in no particular order:
 
 The package list sorts foreground → running → debuggable → everything else, because that's the order I want them in 95% of the time. The other 5% there's a search box. Sorted.
 
-## Shipping it
+## Shipping it, or: the EXE path is a dead end
 
-MSIX + GitHub Actions + Partner Center. `gh workflow run release-msix.yml` builds x64 + ARM64, bundles, signs, publishes a release. I wave the `.msixbundle` at the Microsoft Store and then wait for certification to either pass or tell me my privacy policy URL is wrong again.
+This is the part the official docs actively send you the wrong way on, so buckle in.
 
-<!-- MEME PLACEHOLDER: distracted boyfriend, labelled "me", "submitting a new MSIX build", "fixing the actual bug someone reported" -->
+The [extension publishing docs](https://learn.microsoft.com/en-us/windows/powertoys/command-palette/creating-an-extension) show you how to package your extension as an `.exe` with an Inno Setup installer, and drop some registry keys under `HKCU\Software\Classes\CLSID\{...}\LocalServer32`. Follow along, build, install — the palette does not see your extension. No error. No log. Nothing.
+
+<!-- MEME PLACEHOLDER: "It's simple, just follow the docs" — confidently-wrong / galaxy brain guy -->
+
+**First rabbit hole: the registry entries as written do nothing.** The Inno Setup snippet in the docs is missing `ValueType: string` and `ValueName: ""`. The key gets created, but the default value is empty. PowerToys finds the CLSID, has no idea where the exe lives. You fix it:
+
+```ini
+Root: HKCU; Subkey: "...\LocalServer32"; ValueType: string; ValueName: ""; \
+    ValueData: "{app}\AdbExtension.exe -RegisterProcessAsComServer"
+```
+
+Classic case of docs written by someone who knows the mechanism but not the installer tooling.
+
+**Second rabbit hole: a UAC prompt on install.** `{autopf}` resolves to Program Files, which needs elevation. Nobody wants to click through UAC for a Command Palette extension. Swap to `{localappdata}\AdbExtension` and set `PrivilegesRequired=lowest`. Done.
+
+**Third rabbit hole: none of it matters anyway.**
+
+Registry correct. No UAC prompt. Installs cleanly. Still does not show up in Command Palette. Anywhere.
+
+PowerToys discovers extensions exclusively via the Windows `AppExtensionCatalog` API:
+
+```csharp
+AppExtensionCatalog.Open("com.microsoft.commandpalette").FindAllAsync();
+```
+
+That API only reads `windows.appExtension` declarations from `Package.appxmanifest` on **MSIX-packaged** apps. An EXE installer has no package identity, so it's completely invisible to this API regardless of how pristine your COM registry entries are.
+
+I went looking for a fallback. There isn't one. Checked against the PowerToys source in `PowerToys/src/modules/cmdpal` — no registry-based discovery path, no directory scan for unpackaged extensions, not even a TODO. There *is* an `AppPackagingFlavor` enum in the codebase with values like `Unpackaged` and `UnpackagedPortable` which looks promising for about thirty seconds, then you realise it's never consulted during extension discovery. It only shows up in diagnostic logging. In this house we still use enums for decoration.
+
+<!-- MEME PLACEHOLDER: "Spent all day fixing the car. Realised it needed a boat." — wait-it-was-never-going-to-work energy -->
+
+**Fourth rabbit hole: Visual Studio was lying to me (kindly).** The whole reason any of this worked during development: the VS `AdbExtension (Package)` profile deploys as a proper MSIX with a dev certificate. `AppExtensionCatalog` finds it, everything works. The unpackaged EXE profile has no package identity at all. Entirely different mechanism, nothing in the docs mentions the gap, and your dev loop happily masks the production failure.
+
+So just ship an MSIX. Easy. Right?
 
 ## Signing your MSIX. Oh well.
 
@@ -172,6 +205,8 @@ Your signing options, as far as I can tell:
 
 I went with the Store. Submit the MSIX, wait for certification, Microsoft signs it. Then you upload the Store-signed MSIX to your GitHub release and point your WinGet manifest at it — `InstallerType: msix`, proper `SignatureSha256`, done. `winget install` works, gallery install works, everything works.
 
+One detail nobody writes down: the Command Palette's built-in gallery is populated from WinGet by **tag**. Add `windows-commandpalette-extension` to your manifest's `Tags` list and your extension appears in the gallery. Omit it and it doesn't. That's the whole mechanism. Of course when I first added the tag I was still shipping the broken EXE — so it was discoverable *and* broken, which is the worst of both worlds. Pulled the tag until the signed MSIX went live.
+
 Getting the Store-signed MSIX *back out* of the Store was its own adventure. `winget download` requires an organisational Microsoft account, apparently — personal accounts need not apply. `store.rg-adguard.net` redirects to HTTP and my browser very politely refused. In the end `msft-store.tplant.com.au` worked fine.
 
 The signed bundle it hands you contains individual per-architecture MSIXes inside — it's just a zip with a fancy extension. Rename it, extract, grab the x64 one, upload to GitHub Releases, run `winget hash --msix` on it, paste the hash into the manifest. Submit PR to winget-pkgs. Done.
@@ -179,6 +214,10 @@ The signed bundle it hands you contains individual per-architecture MSIXes insid
 <!-- MEME PLACEHOLDER: Thanos "finally. something worked." captioned exactly that -->
 
 ## Anyways
+
+Building the extension was fine. Publishing it was a completely different beast, and the official docs will cheerfully send you down a path that cannot work. The irony of building a free tool for developers and hitting a cert paywall to distribute it is not lost on me.
+
+Filed a docs PR on `MicrosoftDocs/windows-dev-docs` <!-- TODO: link --> and opened an issue on `microsoft/PowerToys` <!-- TODO: link --> so the next person googling "command palette extension not showing up" finds something. You're welcome, future googlers.
 
 If you're on Windows and you do Android dev, try it:
 
