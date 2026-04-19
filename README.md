@@ -2,7 +2,7 @@
 
 A Windows 11 Command Palette extension (PowerToys) for Android developers. Exposes common ADB operations directly from the command palette.
 
-![Top-level commands](top_level_1.png)
+![Top-level commands](screenshots/top_level_1.png)
 
 ## Requirements
 
@@ -40,9 +40,9 @@ Will get around it soon™
 
 Browse all installed packages on the connected device, filtered by status (foreground, running, debuggable). Select a package to act on it:
 
-![Package list](adb_packages_1.png)
+![Package list](screenshots/adb_packages_1.png)
 
-![Package actions](adb_packages_commands.png)
+![Package actions](screenshots/adb_packages_commands.png)
 
 | Action | ADB equivalent |
 |---|---|
@@ -61,7 +61,7 @@ Browse all installed packages on the connected device, filtered by status (foreg
 
 Install one or more APKs from a file picker.
 
-![APK Manager](apk_manager.png)
+![APK Manager](screenshots/apk_manager.png)
 
 Actions can be starred as favorites and will appear at the top of the list for that package.
 
