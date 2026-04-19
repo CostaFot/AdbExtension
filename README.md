@@ -16,7 +16,10 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 
 Install from the Microsoft Store - it works out of the box.
 
-[Install from Microsoft Store](#) ← link coming soon
+<a href="https://get.microsoft.com/installer/download/9nhdx4xwcngs?referrer=appbadge" target="_self" >
+	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
+</a>
+
 
 ### Manual MSIX (sideload)
 
