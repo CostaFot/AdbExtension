@@ -12,7 +12,7 @@
 
 <AppxPackageIdentityName>CostaFotiadis.ADBExtensionforCommandPalette</AppxPackageIdentityName>
     <AppxPackagePublisher>CN=3D57AA92-97A9-42D2-8CB0-4207D9145514</AppxPackagePublisher>
-    <AppxPackageVersion>1.0.7.0</AppxPackageVersion>
+    <AppxPackageVersion>1.0.8.0</AppxPackageVersion>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -100,13 +100,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'!='Debug'">
-    <!-- In Release builds, trimming is enabled by default.
-         feel free to disable this if needed -->
-    <PublishTrimmed>true</PublishTrimmed>
+    <PublishTrimmed>false</PublishTrimmed>
     <SelfContained>true</SelfContained>
-
-    <!-- In release, also ignore the aforementioned ILLink warning -->
-    <ILLinkTreatWarningsAsErrors>false</ILLinkTreatWarningsAsErrors>
   </PropertyGroup>
 
 

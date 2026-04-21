@@ -11,7 +11,7 @@
   <Identity
     Name="CostaFotiadis.ADBExtensionforCommandPalette"
     Publisher="CN=3D57AA92-97A9-42D2-8CB0-4207D9145514"
-    Version="1.0.7.0" />
+    Version="1.0.8.0" />
 
   <Properties>
     <DisplayName>ADB Extension for Command Palette</DisplayName>
