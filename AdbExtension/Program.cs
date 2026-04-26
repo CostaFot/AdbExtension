@@ -2,14 +2,16 @@ using Microsoft.CommandPalette.Extensions;
 using Shmuelie.WinRTServer;
 using Shmuelie.WinRTServer.CsWinRT;
 using System;
-using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace AdbExtension;
 
 public class Program
 {
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
+
     [MTAThread]
     public static void Main(string[] args)
     {
@@ -39,7 +41,11 @@ public class Program
         }
         else
         {
-            Console.WriteLine("Not being launched as a Extension... exiting.");
+            MessageBox(
+                IntPtr.Zero,
+                "ADB Extension for Command Palette is a background extension.\n\nTo use it, open PowerToys Command Palette and search for \"ADB\".",
+                "ADB Extension for Command Palette",
+                0x40 /* MB_ICONINFORMATION */);
         }
     }
 }
