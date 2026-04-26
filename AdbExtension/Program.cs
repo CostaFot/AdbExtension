@@ -1,4 +1,5 @@
 using Microsoft.CommandPalette.Extensions;
+using Sentry;
 using Shmuelie.WinRTServer;
 using Shmuelie.WinRTServer.CsWinRT;
 using System;
@@ -15,6 +16,12 @@ public class Program
     [MTAThread]
     public static void Main(string[] args)
     {
+        using var _ = SentrySdk.Init(options =>
+        {
+            options.Dsn = "https://1a3434d26fce02c472ea11d62bd2fe6e@o4511287910596608.ingest.de.sentry.io/4511287921016912";
+            options.AutoSessionTracking = true;
+        });
+
         Log.Info("AdbExtension starting");
 
         if (args.Length > 0 && args[0] == "-RegisterProcessAsComServer")
