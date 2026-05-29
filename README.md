@@ -18,27 +18,18 @@ A Windows 11 Command Palette extension (PowerToys) for Android developers. Expos
 
 ## Installation
 
-### Microsoft Store (recommended)
-
-Install from the Microsoft Store - it works out of the box.
+### Microsoft Store
 
 <a href="https://get.microsoft.com/installer/download/9nhdx4xwcngs?referrer=appbadge" target="_self" >
 	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
 </a>
 
 
-### Manual MSIX (sideload)
-
-Download the `.msixbundle` from the [latest GitHub Release](https://github.com/CostaFot/AdbExtension/releases/latest). Before installing, you'll need to trust the self-signed certificate:
-
-1. Right-click the `.msixbundle` → Properties → Digital Signatures → select the cert → Details → View Certificate → Install Certificate
-2. Store location: **Local Machine** → **Trusted People**
-3. Double-click the `.msixbundle` to install
-
-
 ### WinGet
 
-Will get around it soon™
+```powershell
+winget install --id CostaFotiadis.ADBExtensionforCommandPalette
+```
 
 ## Features
 
