@@ -15,24 +15,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Record total downloads
+      - name: Collect stats
+        shell: pwsh
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN:            ${{ github.token }}
+          STORE_TENANT_ID:     ${{ secrets.STORE_TENANT_ID }}
+          STORE_CLIENT_ID:     ${{ secrets.STORE_CLIENT_ID }}
+          STORE_CLIENT_SECRET: ${{ secrets.STORE_CLIENT_SECRET }}
         run: |
-          DATE=$(date -u +%Y-%m-%d)
-          TOTAL=$(gh api "repos/${{ github.repository }}/releases" --paginate \
-            --jq '[.[].assets[].download_count] | add // 0' \
-            | awk '{s+=$1} END {print s+0}')
+          $date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd")
 
-          FILE=download-stats.csv
-          [ -f "$FILE" ] || echo "date,total_downloads" > "$FILE"
+          # --- GitHub + WinGet: cumulative downloads across all release assets ---
+          $ghLines = gh api "repos/$env:GITHUB_REPOSITORY/releases" --paginate `
+            --jq '[.[].assets[].download_count] | add // 0'
+          $github = ($ghLines | ForEach-Object { [int]$_ } | Measure-Object -Sum).Sum
 
-          # Idempotent: drop any existing row for today, then append the latest count
-          grep -v "^$DATE," "$FILE" > "$FILE.tmp" || true
-          mv "$FILE.tmp" "$FILE"
-          echo "$DATE,$TOTAL" >> "$FILE"
+          # --- Microsoft Store: cumulative acquisitions since launch ---
+          # Skipped (left blank) if the STORE_* secrets aren't configured.
+          $store = ""
+          if (-not [string]::IsNullOrWhiteSpace($env:STORE_TENANT_ID)) {
+            try {
+              $store = ./Get-StoreStats.ps1 -StartDate ([datetime]"2026-04-01")
+            } catch {
+              Write-Host "::warning::Store fetch failed: $_"
+            }
+          }
 
-          echo "Recorded $TOTAL downloads for $DATE"
+          # --- Append one row per day (idempotent on re-runs) ---
+          $file = "download-stats.csv"
+          if (-not (Test-Path $file)) {
+            "date,github_downloads,store_acquisitions" | Set-Content $file -Encoding utf8
+          }
+          (Get-Content $file) | Where-Object { $_ -notmatch "^$date," } | Set-Content $file -Encoding utf8
+          "$date,$github,$store" | Add-Content $file -Encoding utf8
+
+          Write-Host "Recorded $date -> github=$github store=$store"
 
       - name: Commit if changed
         run: |
