@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Install Stats — ADB Extension for Command Palette</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 720px;
+      margin: 60px auto;
+      padding: 0 24px;
+      color: #1a1a1a;
+      line-height: 1.7;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 4px; }
+    .subtitle { color: #666; margin-bottom: 32px; }
+    a { color: #0066cc; }
+
+    .cards { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 0 28px; }
+    .card {
+      flex: 1 1 160px;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .card .label { color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .card .value { font-size: 1.7rem; font-weight: 600; margin-top: 4px; }
+    .card.gh .value { color: #0066cc; }
+    .card.store .value { color: #d83b01; }
+
+    .chart-wrap { position: relative; }
+    #status { color: #666; padding: 24px 0; }
+    footer { color: #888; font-size: 0.85rem; margin-top: 28px; }
+  </style>
+</head>
+<body>
+  <h1>Install Stats</h1>
+  <p class="subtitle">ADB Extension for Command Palette &mdash; updated daily</p>
+
+  <div id="cards" class="cards" hidden>
+    <div class="card gh">
+      <div class="label">GitHub + WinGet</div>
+      <div class="value" id="v-github">&ndash;</div>
+    </div>
+    <div class="card store">
+      <div class="label">Microsoft Store</div>
+      <div class="value" id="v-store">&ndash;</div>
+    </div>
+    <div class="card">
+      <div class="label">Combined</div>
+      <div class="value" id="v-total">&ndash;</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <p id="status">Loading stats&hellip;</p>
+    <canvas id="chart" hidden></canvas>
+  </div>
+
+  <footer>
+    Source: <a href="https://github.com/CostaFot/AdbExtension/blob/stats/download-stats.csv">download-stats.csv</a>
+    on the <code>stats</code> branch. GitHub counts direct + WinGet downloads; Store counts
+    acquisitions. Both are cumulative; the chart grows one point per day.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const CSV_URL =
+      "https://raw.githubusercontent.com/CostaFot/AdbExtension/stats/download-stats.csv";
+
+    const statusEl = document.getElementById("status");
+    const fmt = (n) => (n == null ? "–" : n.toLocaleString("en-US"));
+
+    function parseCsv(text) {
+      const lines = text.trim().split(/\r?\n/);
+      lines.shift(); // drop header row
+      return lines
+        .filter((l) => l.trim() !== "")
+        .map((line) => {
+          const [date, gh, store] = line.split(",");
+          return {
+            date: date,
+            github: gh === undefined || gh === "" ? null : Number(gh),
+            store: store === undefined || store === "" ? null : Number(store),
+          };
+        });
+    }
+
+    async function load() {
+      let rows;
+      try {
+        const res = await fetch(CSV_URL + "?t=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        rows = parseCsv(await res.text());
+      } catch (err) {
+        statusEl.textContent = "Couldn't load stats (" + err.message + "). Try again shortly.";
+        return;
+      }
+
+      if (rows.length === 0) {
+        statusEl.textContent = "No data recorded yet — check back after the next daily run.";
+        return;
+      }
+
+      // Headline numbers from the most recent row.
+      const last = rows[rows.length - 1];
+      const lastCombined =
+        last.github != null && last.store != null ? last.github + last.store : null;
+      document.getElementById("v-github").textContent = fmt(last.github);
+      document.getElementById("v-store").textContent = fmt(last.store);
+      document.getElementById("v-total").textContent = fmt(lastCombined);
+      document.getElementById("cards").hidden = false;
+
+      const labels = rows.map((r) => r.date);
+      const combined = rows.map((r) =>
+        r.github != null && r.store != null ? r.github + r.store : null
+      );
+
+      const canvas = document.getElementById("chart");
+      statusEl.hidden = true;
+      canvas.hidden = false;
+
+      new Chart(canvas.getContext("2d"), {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "GitHub + WinGet",
+              data: rows.map((r) => r.github),
+              borderColor: "#0066cc",
+              backgroundColor: "#0066cc",
+              tension: 0.2,
+              spanGaps: true,
+            },
+            {
+              label: "Microsoft Store",
+              data: rows.map((r) => r.store),
+              borderColor: "#d83b01",
+              backgroundColor: "#d83b01",
+              tension: 0.2,
+              spanGaps: true,
+            },
+            {
+              label: "Combined total",
+              data: combined,
+              borderColor: "#888888",
+              backgroundColor: "#888888",
+              borderDash: [6, 4],
+              tension: 0.2,
+              spanGaps: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { position: "top" } },
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: "Cumulative installs" } },
+          },
+        },
+      });
+    }
+
+    load();
+  </script>
+</body>
+</html>

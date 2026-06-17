@@ -3,6 +3,8 @@
 [![GitHub release](https://img.shields.io/github/v/release/CostaFot/AdbExtension?style=flat-square&logo=github&label=release)](https://github.com/CostaFot/AdbExtension/releases/latest)
 [![GitHub downloads](https://img.shields.io/github/downloads/CostaFot/AdbExtension/total?style=flat-square&logo=github&label=downloads)](https://github.com/CostaFot/AdbExtension/releases)
 
+📊 [Live install stats](https://costafot.github.io/AdbExtension/stats.html) — GitHub, WinGet & Microsoft Store
+
 <a href="https://www.costafotiadis.com/it-looks-like-youre-trying-to-build-an-extension-for-command-palette/">
   <img src="screenshots/header_blog.png" width="600"/>
 </a>
