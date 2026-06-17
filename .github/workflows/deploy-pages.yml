@@ -9,37 +9,33 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
-# Avoid overlapping deploys racing on the gh-pages branch.
+# Allow one concurrent deployment; let an in-progress run finish.
 concurrency:
-  group: deploy-pages
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Publish docs/ to gh-pages
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          # Build the published tree in an isolated dir, then force-push a single
-          # fresh commit to gh-pages. master stays the editable source.
-          tmp="$(mktemp -d)"
-          cp -r docs/. "$tmp/"
-          touch "$tmp/.nojekyll"          # plain static site, skip Jekyll processing
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
 
-          cd "$tmp"
-          git init -q
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -q -b gh-pages
-          git add -A
-          git commit -q -m "Deploy docs from ${GITHUB_SHA::7}"
-          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push -q -f origin gh-pages
-          echo "Published $(find . -type f -not -path './.git/*' | wc -l) files to gh-pages"
+      - name: Upload docs/ as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
