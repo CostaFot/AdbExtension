@@ -225,3 +225,7 @@ This reads the version from the csproj automatically, builds x64 + ARM64, bundle
 1. Download the `.msixbundle` from the GitHub Release
 2. Partner Center → app → new submission → Packages → upload the `.msixbundle`
 3. Update description/notes, submit
+
+## Board
+
+This repo is the Linear project **Command Palette extensions** on Costa's public board (https://www.costafotiadis.com/board/). The `board` skill has the commands. Issues for this repo carry that project and one area label (`cmdpal`). Follow-ups (a deferred fix, a check that waits on something external, a TODO written here) become an issue before the session ends; a note in this file is not a substitute.
